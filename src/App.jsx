@@ -8,6 +8,7 @@ import CategorySection from "./components/CategorySection";
 import BrandsSection from "./components/BrandsSection";
 import WhyChooseUs from "./components/WhyChooseUs";
 import Cart from "./pages/Cart";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         />
 
         <Route path="/cart" element={<Cart />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
 
       <Footer />
