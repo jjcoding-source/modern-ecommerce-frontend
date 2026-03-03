@@ -10,6 +10,10 @@ import WhyChooseUs from "./components/WhyChooseUs";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import ProductDetails from "./pages/ProductDetails";
+
 
 function App() {
   return (
@@ -33,6 +37,9 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
       </Routes>
 
       <Footer />
