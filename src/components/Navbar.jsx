@@ -1,124 +1,79 @@
-import { useState } from "react";
-import {
-  FaShoppingCart,
-  FaUser,
-  FaHeart,
-  FaBell,
-  FaBars,
-  FaTimes,
-  FaSearch,
-} from "react-icons/fa";
+import { FaShoppingCart, FaUser, FaHeart, FaBell } from "react-icons/fa";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
-  const cartCount = 2;
+  const { cartItems } = useCart();
+
+  const cartCount = cartItems.reduce(
+    (total, item) => total + item.qty,
+    0
+  );
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b">
-      <div className="max-w-7xl mx-auto px-4">
-
-        {/* Main bar */}
-        <div className="h-16 flex items-center justify-between gap-6">
+    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="h-16 flex items-center justify-between">
 
           {/* Left */}
-          <div className="flex items-center gap-6 shrink-0">
-            <h1 className="text-2xl font-bold text-blue-600 cursor-pointer">
-              ShopNext
+          <div className="flex items-center gap-10">
+            <h1 className="text-2xl font-bold text-blue-600 tracking-tight cursor-pointer">
+              Shoply
             </h1>
 
-            <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-700">
-              <span className="hover:text-blue-600 cursor-pointer">Home</span>
-              <span className="hover:text-blue-600 cursor-pointer">Shop</span>
-              <span className="hover:text-blue-600 cursor-pointer">Categories</span>
-              <span className="hover:text-blue-600 cursor-pointer">Deals</span>
-            </nav>
-          </div>
-
-          {/* Center search */}
-          <div className="hidden md:flex flex-1 max-w-xl">
-            <div className="w-full flex items-center bg-gray-100 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-blue-500">
-              <FaSearch className="text-gray-400 mr-2" />
-              <input
-                type="text"
-                placeholder="Search for products..."
-                className="w-full bg-transparent outline-none text-sm"
-              />
-            </div>
+            <ul className="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-600">
+              <li className="hover:text-blue-600 cursor-pointer">Home</li>
+              <li className="hover:text-blue-600 cursor-pointer">Shop</li>
+              <li className="hover:text-blue-600 cursor-pointer">Categories</li>
+              <li className="hover:text-blue-600 cursor-pointer">Deals</li>
+            </ul>
           </div>
 
           {/* Right */}
-          <div className="flex items-center gap-5 shrink-0">
+          <div className="flex items-center gap-5">
 
-            <button className="relative p-2 rounded-full hover:bg-gray-100">
-              <FaHeart className="text-lg text-gray-600" />
-            </button>
-
-            <button className="relative p-2 rounded-full hover:bg-gray-100">
-              <FaBell className="text-lg text-gray-600" />
-            </button>
-
-            <button className="relative p-2 rounded-full hover:bg-gray-100">
-              <FaShoppingCart className="text-lg text-gray-700" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 text-[10px] bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
-            <div className="hidden md:flex items-center gap-3">
-              <button className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600">
-                <FaUser />
-                Login
-              </button>
-
-              <button className="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-blue-700 transition">
-                Register
-              </button>
-            </div>
-
-            {/* mobile toggle */}
-            <button
-              onClick={() => setOpen(!open)}
-              className="lg:hidden p-2 rounded-md hover:bg-gray-100"
-            >
-              {open ? <FaTimes /> : <FaBars />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <div className="lg:hidden bg-white border-t">
-          <div className="px-4 py-4 flex flex-col gap-4 text-sm font-medium text-gray-700">
-
-            <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
-              <FaSearch className="text-gray-400 mr-2" />
+            {/* Search */}
+            <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-64">
               <input
                 type="text"
-                placeholder="Search..."
-                className="w-full bg-transparent outline-none text-sm"
+                placeholder="Search products…"
+                className="bg-transparent outline-none text-sm w-full"
               />
             </div>
 
-            <span className="hover:text-blue-600 cursor-pointer">Home</span>
-            <span className="hover:text-blue-600 cursor-pointer">Shop</span>
-            <span className="hover:text-blue-600 cursor-pointer">Categories</span>
-            <span className="hover:text-blue-600 cursor-pointer">Deals</span>
+            {/* Icons */}
+            <div className="flex items-center gap-4">
 
-            <div className="pt-3 border-t flex gap-4">
-              <button className="flex items-center gap-2 text-sm">
-                <FaUser /> Login
+              <button className="relative text-gray-700 hover:text-blue-600 transition">
+                <FaShoppingCart className="text-lg" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    {cartCount}
+                  </span>
+                )}
               </button>
 
-              <button className="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-full">
+              <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
+                <FaHeart className="text-lg" />
+              </button>
+
+              <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
+                <FaBell className="text-lg" />
+              </button>
+
+              <div className="hidden md:flex items-center gap-2 text-gray-700 hover:text-blue-600 cursor-pointer transition">
+                <FaUser />
+                <span className="text-sm font-medium">Login</span>
+              </div>
+
+              <button className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition">
                 Register
               </button>
+
             </div>
           </div>
+
         </div>
-      )}
-    </header>
+      </div>
+    </nav>
   );
 }
