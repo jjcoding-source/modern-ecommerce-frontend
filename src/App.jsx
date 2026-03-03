@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import CategorySection from "./components/CategorySection";
 import BrandsSection from "./components/BrandsSection";
+import WhyChooseUs from "./components/WhyChooseUs";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <CategorySection />
       <Home /> 
       <BrandsSection /> 
+      <WhyChooseUs />
       <Footer />
     </div>
   );
