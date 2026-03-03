@@ -1,4 +1,5 @@
 import { FaShoppingCart, FaUser, FaHeart, FaBell } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
@@ -16,15 +17,49 @@ export default function Navbar() {
 
           {/* Left */}
           <div className="flex items-center gap-10">
-            <h1 className="text-2xl font-bold text-blue-600 tracking-tight cursor-pointer">
+            <Link
+              to="/"
+              className="text-2xl font-bold text-blue-600 tracking-tight cursor-pointer"
+            >
               Shoply
-            </h1>
+            </Link>
 
             <ul className="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-600">
-              <li className="hover:text-blue-600 cursor-pointer">Home</li>
-              <li className="hover:text-blue-600 cursor-pointer">Shop</li>
-              <li className="hover:text-blue-600 cursor-pointer">Categories</li>
-              <li className="hover:text-blue-600 cursor-pointer">Deals</li>
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-blue-600 transition"
+                >
+                  Home
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-blue-600 transition"
+                >
+                  Shop
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-blue-600 transition"
+                >
+                  Categories
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-blue-600 transition"
+                >
+                  Deals
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -32,7 +67,7 @@ export default function Navbar() {
           <div className="flex items-center gap-5">
 
             {/* Search */}
-            <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-64">
+            <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-64 focus-within:ring-2 focus-within:ring-blue-500 transition">
               <input
                 type="text"
                 placeholder="Search products…"
@@ -43,29 +78,39 @@ export default function Navbar() {
             {/* Icons */}
             <div className="flex items-center gap-4">
 
-              <button className="relative text-gray-700 hover:text-blue-600 transition">
+              {/* Cart */}
+              <Link
+                to="/cart"
+                className="relative text-gray-700 hover:text-blue-600 transition"
+                aria-label="Cart"
+              >
                 <FaShoppingCart className="text-lg" />
+
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                     {cartCount}
                   </span>
                 )}
-              </button>
+              </Link>
 
+              {/* Wishlist */}
               <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
                 <FaHeart className="text-lg" />
               </button>
 
+              {/* Notifications */}
               <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
                 <FaBell className="text-lg" />
               </button>
 
+              {/* User */}
               <div className="hidden md:flex items-center gap-2 text-gray-700 hover:text-blue-600 cursor-pointer transition">
                 <FaUser />
                 <span className="text-sm font-medium">Login</span>
               </div>
 
-              <button className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition">
+              {/* Register */}
+              <button className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition shadow-sm">
                 Register
               </button>
 
