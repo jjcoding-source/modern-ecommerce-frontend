@@ -2,6 +2,7 @@ import SidebarFilter from "../components/SidebarFilter";
 import ProductCard from "../components/ProductCard"; 
 import products from "../data/products"; 
 import SpecialOffers from "../components/SpecialOffers";
+import Testimonials from "../components/Testimonials";
 
 export default function Home() {
   return (
@@ -18,6 +19,9 @@ export default function Home() {
 
       {}
       <SpecialOffers /> 
+      
+      {}
+      <Testimonials />  
     </div>
   );
 }
