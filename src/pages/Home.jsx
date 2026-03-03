@@ -1,6 +1,7 @@
 import SidebarFilter from "../components/SidebarFilter";
 import ProductCard from "../components/ProductCard"; 
 import products from "../data/products"; 
+import SpecialOffers from "../components/SpecialOffers";
 
 export default function Home() {
   return (
@@ -14,6 +15,9 @@ export default function Home() {
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
+
+      {}
+      <SpecialOffers /> 
     </div>
   );
 }
