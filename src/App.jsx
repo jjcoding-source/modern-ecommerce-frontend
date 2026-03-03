@@ -1,14 +1,15 @@
-
-import './App.css'
+import Navbar from "./components/Navbar";
 
 function App() {
-
-
   return (
-    <>
-       Ecommerce
-    </>
-  )
+    <div className="App">
+      <Navbar />
+      {}
+      <div className="container mx-auto mt-10">
+        <h2 className="text-xl font-bold text-gray-700">Homepage Content Coming Soon...</h2>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
