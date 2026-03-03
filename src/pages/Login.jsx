@@ -30,9 +30,23 @@ export default function Login() {
 
     setError("");
 
-   
-    console.log("Login payload:", form);
+    // Check localStorage for users
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const user = users.find(
+      (u) => u.email === form.email && u.password === form.password
+    );
 
+    if (!user) {
+      setError("Invalid email or password");
+      return;
+    }
+
+    // Save logged-in user in localStorage
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    console.log("Login successful:", user);
+
+    // Navigate to homepage
     navigate("/");
   };
 
@@ -143,7 +157,6 @@ export default function Login() {
               <div className="h-px bg-gray-200 flex-1" />
             </div>
 
-            {}
             <button
               type="button"
               className="w-full flex items-center justify-center gap-3 rounded-lg border border-gray-200 py-2.5 hover:bg-gray-50 transition"

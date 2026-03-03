@@ -1,122 +1,156 @@
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+
+// ----------------- Validation Schema -----------------
+const schema = yup.object().shape({
+  fullName: yup.string().required("Full name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
+});
 
 export default function Register() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const navigate = useNavigate();
+
+  const onSubmit = (data) => {
+    setLoading(true);
+    setApiError("");
+
+    try {
+      // Get existing users from localStorage
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      // Check if email already exists
+      if (users.some((u) => u.email === data.email)) {
+        throw new Error("Email already registered");
+      }
+
+      // Add new user
+      users.push({
+        id: Date.now(),
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
+      });
+
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("Registration successful!");
+      navigate("/login"); 
+    } catch (err) {
+      setApiError(err.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white/90 backdrop-blur rounded-2xl shadow-xl p-8">
+    <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Create account</h2>
-          <p className="text-sm text-gray-500 mt-2">
-            Join Shoply and start shopping smarter
-          </p>
-        </div>
+        {apiError && (
+          <p className="text-red-500 mb-4 text-sm">{apiError}</p>
+        )}
 
-        {/* Form */}
-        <form className="space-y-5">
-
-          {/* Name */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Full Name */}
           <div>
-            <label className="text-sm font-medium text-gray-600">
-              Full name
-            </label>
+            <label className="text-sm font-medium mb-1 block">Full Name</label>
             <input
               type="text"
-              placeholder="Enter your name"
-              className="mt-1 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register("fullName")}
+              className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
             />
+            {errors.fullName && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.fullName.message}
+              </p>
+            )}
           </div>
 
           {/* Email */}
           <div>
-            <label className="text-sm font-medium text-gray-600">
-              Email address
-            </label>
+            <label className="text-sm font-medium mb-1 block">Email</label>
             <input
               type="email"
-              placeholder="Enter your email"
-              className="mt-1 w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register("email")}
+              className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Password */}
           <div>
-            <label className="text-sm font-medium text-gray-600">
-              Password
-            </label>
-            <div className="relative mt-1">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Create password"
-                className="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
+            <label className="text-sm font-medium mb-1 block">Password</label>
+            <input
+              type="password"
+              {...register("password")}
+              className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
-          {/* Confirm password */}
+          {/* Confirm Password */}
           <div>
-            <label className="text-sm font-medium text-gray-600">
-              Confirm password
+            <label className="text-sm font-medium mb-1 block">
+              Confirm Password
             </label>
-            <div className="relative mt-1">
-              <input
-                type={showConfirm ? "text" : "password"}
-                placeholder="Confirm password"
-                className="w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-              >
-                {showConfirm ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
+            <input
+              type="password"
+              {...register("confirmPassword")}
+              className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
-          {/* Terms */}
-          <div className="flex items-start gap-2 text-sm">
-            <input type="checkbox" className="mt-1" />
-            <p className="text-gray-500">
-              I agree to the{" "}
-              <span className="text-blue-600 cursor-pointer">
-                Terms & Conditions
-              </span>
-            </p>
-          </div>
-
-          {/* Submit */}
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 text-white py-3 font-medium hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
           >
-            Create account
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <p className="text-sm text-gray-500 mt-4 text-center">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-blue-600 font-medium hover:underline"
-          >
+          <Link to="/login" className="text-blue-600 hover:underline">
             Login
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );
