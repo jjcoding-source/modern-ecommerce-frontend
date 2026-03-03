@@ -113,9 +113,12 @@ export default function Navbar() {
             </Link>
 
               {/* Register */}
-              <button className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition shadow-sm">
-                Register
-              </button>
+              <Link
+                to="/register"
+                className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition"
+              >
+               Register
+            </Link>
 
             </div>
           </div>
