@@ -104,10 +104,13 @@ export default function Navbar() {
               </button>
 
               {/* User */}
-              <div className="hidden md:flex items-center gap-2 text-gray-700 hover:text-blue-600 cursor-pointer transition">
-                <FaUser />
-                <span className="text-sm font-medium">Login</span>
-              </div>
+            <Link
+              to="/login"
+              className="hidden md:flex items-center gap-2 text-gray-700 hover:text-blue-600 transition"
+            >
+              <FaUser />
+              <span className="text-sm font-medium">Login</span>
+            </Link>
 
               {/* Register */}
               <button className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition shadow-sm">
