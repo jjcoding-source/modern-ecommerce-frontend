@@ -6,22 +6,29 @@ import Testimonials from "../components/Testimonials";
 
 export default function Home() {
   return (
-    <div className="container mx-auto mt-10 flex flex-col md:flex-row gap-6">
-      {/* Sidebar Filter */}
-      <SidebarFilter />
+    <div className="container mx-auto mt-10 px-6">
+      {/* Sidebar + Product Grid */}
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Sidebar */}
+        <SidebarFilter />
 
-      {/* Product Grid */}
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {/* Product Grid */}
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
       </div>
 
-      {}
-      <SpecialOffers /> 
-      
-      {}
-      <Testimonials />  
+      {/* Special Offers Section */}
+      <div className="mt-12">
+        <SpecialOffers />
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="mt-12">
+        <Testimonials />
+      </div>
     </div>
   );
 }
