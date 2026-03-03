@@ -13,7 +13,7 @@ import Register from "./pages/Register";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import ProductDetails from "./pages/ProductDetails";
-
+import MyOrders from "./pages/MyOrders";
 
 function App() {
   return (
@@ -40,6 +40,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/orders" element={<MyOrders />} />
       </Routes>
 
       <Footer />

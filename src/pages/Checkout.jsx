@@ -28,19 +28,35 @@ export default function Checkout() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    for (const key in form) {
-      if (!form[key]) {
-        alert("Please fill all address fields");
-        return;
-      }
+  for (const key in form) {
+    if (!form[key]) {
+      alert("Please fill all address fields");
+      return;
     }
+  }
 
-    // mock checkout success
-    navigate("/order-success");
+  const order = {
+    id: Date.now(),
+    items: cartItems,
+    total,
+    address: form,
+    paymentMethod,
+    date: new Date().toISOString(),
   };
+
+  const existingOrders =
+    JSON.parse(localStorage.getItem("orders")) || [];
+
+  localStorage.setItem(
+    "orders",
+    JSON.stringify([order, ...existingOrders])
+  );
+
+  navigate("/order-success");
+};
 
   if (cartItems.length === 0) {
     return (

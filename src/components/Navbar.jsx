@@ -66,6 +66,10 @@ export default function Navbar() {
           {/* Right */}
           <div className="flex items-center gap-5">
 
+            <li className="hover:text-blue-600 cursor-pointer">
+  <Link to="/orders">My Orders</Link>
+</li>
+
             {/* Search */}
             <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-64 focus-within:ring-2 focus-within:ring-blue-500 transition">
               <input
