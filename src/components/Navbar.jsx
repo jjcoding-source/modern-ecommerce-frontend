@@ -1,79 +1,107 @@
 import { useState } from "react";
-import { FaShoppingCart, FaUser, FaHeart, FaBell, FaMoon, FaSun } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaUser,
+  FaHeart,
+  FaBell,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 
 export default function Navbar() {
-  const [cartCount, setCartCount] = useState(2);
-  const [darkMode, setDarkMode] = useState(false);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    if (!darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  const [open, setOpen] = useState(false);
+  const [cartCount] = useState(3);
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
-      <div className="container mx-auto flex items-center justify-between p-4">
-        {/* Logo & Links */}
-        <div className="flex items-center space-x-6">
-          <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer">Shopify</h1>
-          <ul className="hidden md:flex space-x-6 text-gray-700 dark:text-gray-200">
-            <li className="hover:text-blue-500 cursor-pointer">Home</li>
-            <li className="hover:text-blue-500 cursor-pointer">Shop</li>
-            <li className="hover:text-blue-500 cursor-pointer">Categories</li>
-            <li className="hover:text-blue-500 cursor-pointer">Deals</li>
-          </ul>
-        </div>
+    <header className="sticky top-0 z-50 bg-white border-b">
+      <div className="max-w-7xl mx-auto px-5">
+        <div className="h-16 flex items-center justify-between gap-6">
 
-        {/* Search & Actions */}
-        <div className="flex items-center space-x-4">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="border rounded-md px-3 py-1 focus:outline-blue-500 hidden md:block dark:bg-gray-800 dark:text-white dark:border-gray-700"
-          />
-          <button className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 hidden md:block">
-            Search
-          </button>
+          {/* LEFT ------------------------------------------------ */}
+          <div className="flex items-center gap-8 shrink-0">
+            <h1 className="text-2xl font-bold text-blue-600 cursor-pointer">
+              Shopify
+            </h1>
 
-          <div className="flex items-center space-x-3">
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={toggleDarkMode}
-              className="text-gray-700 dark:text-gray-200 text-xl hover:text-blue-500"
-            >
-              {darkMode ? <FaSun /> : <FaMoon />}
-            </button>
+            <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-700">
+              <span className="hover:text-blue-600 cursor-pointer">Home</span>
+              <span className="hover:text-blue-600 cursor-pointer">Shop</span>
+              <span className="hover:text-blue-600 cursor-pointer">
+                Categories
+              </span>
+              <span className="hover:text-blue-600 cursor-pointer">Deals</span>
+            </nav>
+          </div>
 
-            <button className="relative text-gray-700 dark:text-gray-200">
-              <FaShoppingCart className="text-xl" />
+          {/* CENTER (Search – always centered and wide) -------- */}
+          <div className="hidden md:flex flex-1 justify-center">
+            <div className="w-full max-w-xl flex">
+              <input
+                className="w-full border border-gray-300 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search products, brands and more..."
+              />
+              <button className="bg-blue-600 text-white px-5 rounded-r-lg hover:bg-blue-700 transition">
+                Search
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT ---------------------------------------------- */}
+          <div className="hidden md:flex items-center gap-5 shrink-0">
+
+            <button className="relative text-gray-700 hover:text-blue-600 transition">
+              <FaShoppingCart className="text-lg" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 text-[10px] bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </button>
 
-            <button className="text-gray-700 dark:text-gray-200">
-              <FaHeart className="hover:text-blue-600" />
+            <button className="text-gray-700 hover:text-blue-600 transition">
+              <FaHeart className="text-lg" />
             </button>
 
-            <button className="text-gray-700 dark:text-gray-200">
-              <FaBell className="hover:text-blue-600" />
+            <button className="text-gray-700 hover:text-blue-600 transition">
+              <FaBell className="text-lg" />
             </button>
 
-            <button className="flex items-center space-x-1 hover:text-blue-600 dark:text-gray-200">
-              <FaUser /> <span>Login</span>
-            </button>
-            <button className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Register
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer hover:text-blue-600 transition">
+              <FaUser />
+              <span>Account</span>
+            </div>
+
+            <button className="ml-2 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+              Sign up
             </button>
           </div>
+
+          {/* MOBILE MENU BUTTON -------------------------------- */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden text-xl text-gray-700"
+          >
+            {open ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
       </div>
-    </nav>
+
+      {/* MOBILE PANEL ----------------------------------------- */}
+      {open && (
+        <div className="md:hidden border-t bg-white px-5 py-4 space-y-4">
+          <input
+            className="w-full border rounded-lg px-3 py-2 text-sm"
+            placeholder="Search products..."
+          />
+
+          <nav className="flex flex-col gap-3 text-sm font-medium text-gray-700">
+            <span>Home</span>
+            <span>Shop</span>
+            <span>Categories</span>
+            <span>Deals</span>
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }
