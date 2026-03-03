@@ -1,18 +1,23 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { Link, useNavigate } from "react-router-dom";
+import { FaCreditCard, FaMoneyBillWave, FaUniversity } from "react-icons/fa";
 
 export default function Checkout() {
-  const { cartItems, clearCart } = useCart();
   const navigate = useNavigate();
+  const { cartItems } = useCart();
 
   const [form, setForm] = useState({
     fullName: "",
     email: "",
+    phone: "",
     address: "",
     city: "",
-    zip: ""
+    state: "",
+    pincode: "",
   });
+
+  const [paymentMethod, setPaymentMethod] = useState("card");
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
@@ -23,107 +28,237 @@ export default function Checkout() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const placeOrder = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (cartItems.length === 0) return;
+    for (const key in form) {
+      if (!form[key]) {
+        alert("Please fill all address fields");
+        return;
+      }
+    }
 
-    
-    clearCart();
+    // mock checkout success
     navigate("/order-success");
   };
 
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center">
+        <h2 className="text-2xl font-semibold mb-4">
+          Your cart is empty
+        </h2>
+        <Link
+          to="/"
+          className="px-6 py-3 rounded-full bg-blue-600 text-white"
+        >
+          Go shopping
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-semibold mb-8">Checkout</h1>
+    <div className="max-w-7xl mx-auto px-6 py-12">
+
+      <h1 className="text-3xl font-semibold mb-10">
+        Checkout
+      </h1>
 
       <form
-        onSubmit={placeOrder}
+        onSubmit={handleSubmit}
         className="grid grid-cols-1 lg:grid-cols-3 gap-10"
       >
-        {/* ---------------- Address ---------------- */}
-        <div className="lg:col-span-2 bg-white border rounded-2xl p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-2">Shipping details</h2>
 
-          <input
-            name="fullName"
-            placeholder="Full name"
-            className="w-full border rounded-lg px-4 py-2"
-            onChange={handleChange}
-            required
-          />
+        {/* ---------------- Left ---------------- */}
+        <div className="lg:col-span-2 space-y-10">
 
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            className="w-full border rounded-lg px-4 py-2"
-            onChange={handleChange}
-            required
-          />
+          {/* Address */}
+          <div className="bg-white border rounded-2xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-6">
+              Shipping Address
+            </h2>
 
-          <input
-            name="address"
-            placeholder="Address"
-            className="w-full border rounded-lg px-4 py-2"
-            onChange={handleChange}
-            required
-          />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              name="city"
-              placeholder="City"
-              className="border rounded-lg px-4 py-2"
-              onChange={handleChange}
-              required
-            />
+              <input
+                name="fullName"
+                placeholder="Full name"
+                value={form.fullName}
+                onChange={handleChange}
+                className="input"
+              />
 
-            <input
-              name="zip"
-              placeholder="ZIP code"
-              className="border rounded-lg px-4 py-2"
-              onChange={handleChange}
-              required
-            />
+              <input
+                name="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+                className="input"
+              />
+
+              <input
+                name="phone"
+                placeholder="Phone"
+                value={form.phone}
+                onChange={handleChange}
+                className="input"
+              />
+
+              <input
+                name="city"
+                placeholder="City"
+                value={form.city}
+                onChange={handleChange}
+                className="input"
+              />
+
+              <input
+                name="state"
+                placeholder="State"
+                value={form.state}
+                onChange={handleChange}
+                className="input"
+              />
+
+              <input
+                name="pincode"
+                placeholder="Pincode"
+                value={form.pincode}
+                onChange={handleChange}
+                className="input"
+              />
+
+              <textarea
+                name="address"
+                placeholder="Full address"
+                value={form.address}
+                onChange={handleChange}
+                rows="3"
+                className="input md:col-span-2 resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Payment */}
+          <div className="bg-white border rounded-2xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-6">
+              Payment Method
+            </h2>
+
+            <div className="space-y-4">
+
+              <label
+                className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition
+                ${paymentMethod === "card" ? "border-blue-600 bg-blue-50" : ""}`}
+              >
+                <input
+                  type="radio"
+                  checked={paymentMethod === "card"}
+                  onChange={() => setPaymentMethod("card")}
+                />
+                <FaCreditCard className="text-xl" />
+                Credit / Debit Card (mock)
+              </label>
+
+              <label
+                className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition
+                ${paymentMethod === "upi" ? "border-blue-600 bg-blue-50" : ""}`}
+              >
+                <input
+                  type="radio"
+                  checked={paymentMethod === "upi"}
+                  onChange={() => setPaymentMethod("upi")}
+                />
+                <FaUniversity className="text-xl" />
+                UPI / Net Banking (mock)
+              </label>
+
+              <label
+                className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition
+                ${paymentMethod === "cod" ? "border-blue-600 bg-blue-50" : ""}`}
+              >
+                <input
+                  type="radio"
+                  checked={paymentMethod === "cod"}
+                  onChange={() => setPaymentMethod("cod")}
+                />
+                <FaMoneyBillWave className="text-xl" />
+                Cash on Delivery
+              </label>
+
+            </div>
+
+            {/* Mock card fields */}
+            {paymentMethod === "card" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <input
+                  placeholder="Card number"
+                  className="input md:col-span-2"
+                />
+                <input
+                  placeholder="Name on card"
+                  className="input md:col-span-2"
+                />
+                <input
+                  placeholder="MM/YY"
+                  className="input"
+                />
+                <input
+                  placeholder="CVV"
+                  className="input"
+                />
+              </div>
+            )}
           </div>
         </div>
 
-        {/* ---------------- Summary ---------------- */}
-        <div className="bg-white border rounded-2xl p-6 h-fit space-y-4">
-          <h2 className="text-xl font-semibold">Order summary</h2>
+        {/* ---------------- Right summary ---------------- */}
+        <div className="bg-white border rounded-2xl p-6 shadow-sm h-fit sticky top-24">
 
-          <div className="space-y-2 text-sm text-gray-600">
+          <h3 className="text-xl font-semibold mb-6">
+            Order Summary
+          </h3>
+
+          <div className="space-y-4 text-sm">
+
             {cartItems.map((item) => (
-              <div key={item.id} className="flex justify-between">
-                <span>
+              <div
+                key={item.id}
+                className="flex justify-between gap-3"
+              >
+                <span className="line-clamp-1">
                   {item.name} × {item.qty}
                 </span>
                 <span>
-                  ${(item.price * item.qty).toFixed(2)}
+                  ₹{(item.price * item.qty).toFixed(2)}
                 </span>
               </div>
             ))}
-          </div>
 
-          <div className="border-t pt-4 flex justify-between font-semibold">
-            <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <div className="border-t pt-4 flex justify-between font-medium">
+              <span>Subtotal</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between text-green-600">
+              <span>Shipping</span>
+              <span>Free</span>
+            </div>
+
+            <div className="border-t pt-4 flex justify-between text-lg font-semibold">
+              <span>Total</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 transition"
+            className="mt-6 w-full py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
           >
             Place order
           </button>
 
-          <Link
-            to="/cart"
-            className="block text-center text-sm text-gray-500 hover:text-blue-600"
-          >
-            Back to cart
-          </Link>
         </div>
       </form>
     </div>
