@@ -102,6 +102,27 @@ const products = [
     rating: 4.3,
     image: "https://cdn.pixabay.com/photo/2017/01/20/00/30/fitness-1995420_640.jpg",
   },
+   {
+    id: 12,
+    name: "Sunglasses",
+    price: 50,
+    rating: 4.1,
+    image: "https://cdn.pixabay.com/photo/2016/03/27/21/15/sunglasses-1284994_640.jpg",
+  },
+  {
+    id: 13,
+    name: "Fitness Tracker",
+    price: 85,
+    rating: 4.3,
+    image: "https://cdn.pixabay.com/photo/2017/01/20/00/30/fitness-1995420_640.jpg",
+  },
+  {
+    id: 13,
+    name: "Fitness Tracker",
+    price: 85,
+    rating: 4.3,
+    image: "https://cdn.pixabay.com/photo/2017/01/20/00/30/fitness-1995420_640.jpg",
+  },
 ];
 
 export default products;
