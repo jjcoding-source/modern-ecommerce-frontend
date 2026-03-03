@@ -28,7 +28,7 @@ export default function Navbar({ setFilteredProducts }) {
     );
 
     setFilteredProducts(filtered);
-    setSuggestions(filtered.slice(0,5));
+    setSuggestions(filtered.slice(0, 5));
   }, [searchTerm, setFilteredProducts]);
 
   const handleSelectSuggestion = (product) => {
@@ -92,19 +92,25 @@ export default function Navbar({ setFilteredProducts }) {
             {/* Icons */}
             <div className="flex items-center gap-4">
 
-              {/* Cart Dropdown */}
+              {/* Cart Icon + Dropdown */}
               <div
                 className="relative"
                 onMouseEnter={() => setCartOpen(true)}
                 onMouseLeave={() => setCartOpen(false)}
               >
-                <FaShoppingCart className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {cartCount}
-                  </span>
-                )}
+                <Link
+                  to="/cart"
+                  className="relative text-gray-700 hover:text-blue-600 transition"
+                >
+                  <FaShoppingCart className="text-lg cursor-pointer" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
 
+                {/* Cart Preview */}
                 <div
                   className={`absolute right-0 mt-2 w-96 bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 p-5 transition-all duration-300 ease-in-out transform ${
                     cartOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
@@ -181,9 +187,13 @@ export default function Navbar({ setFilteredProducts }) {
                 </div>
               </div>
 
-              <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
-                <FaHeart className="text-lg" />
-              </button>
+              {/* Wishlist Icon */}
+              <Link
+                to="/wishlist"
+                className="hidden sm:flex text-gray-700 hover:text-blue-600 transition"
+              >
+                <FaHeart className="text-lg cursor-pointer" />
+              </Link>
 
               <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
                 <FaBell className="text-lg" />

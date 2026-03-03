@@ -16,6 +16,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import ProductDetails from "./pages/ProductDetails";
 import MyOrders from "./pages/MyOrders";
 import OrderDetails from "./pages/OrderDetails";
+import Wishlist from "./pages/Wishlist";
 
 import productsData from "./data/products"; 
 
@@ -51,6 +52,7 @@ function App() {
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/orders" element={<MyOrders />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/wishlist" element={<Wishlist />} />
       </Routes>
 
       <Footer />
