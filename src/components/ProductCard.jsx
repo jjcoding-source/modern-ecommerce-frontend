@@ -5,10 +5,11 @@ import {
   FaShoppingCart,
 } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
+import { Link } from "react-router-dom";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
-  const { name, price, rating, image } = product;
+  const { id, name, price, rating, image } = product;
 
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 >= 0.5;
@@ -17,25 +18,29 @@ export default function ProductCard({ product }) {
   return (
     <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col">
 
-      {/* Image */}
-      <div className="relative h-[190px] overflow-hidden bg-gray-50">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-        />
+      <Link to={`/product/${id}`}>
+        <div className="relative h-[190px] overflow-hidden bg-gray-50">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+          />
 
-        <span className="absolute top-3 left-3 text-xs bg-red-500 text-white px-2 py-1 rounded-full">
-          20% OFF
-        </span>
-      </div>
+          <span className="absolute top-3 left-3 text-xs bg-red-500 text-white px-2 py-1 rounded-full">
+            20% OFF
+          </span>
+        </div>
+      </Link>
 
       {/* Content */}
       <div className="flex flex-col flex-1 px-4 pb-4">
 
-        <h3 className="mt-3 text-sm font-semibold text-gray-800 line-clamp-2 min-h-[40px]">
+        <Link
+          to={`/product/${id}`}
+          className="mt-3 text-sm font-semibold text-gray-800 line-clamp-2 min-h-[40px] hover:text-blue-600 transition"
+        >
           {name}
-        </h3>
+        </Link>
 
         {/* Rating */}
         <div className="flex items-center gap-1 text-yellow-400 text-sm mt-1">
@@ -56,7 +61,6 @@ export default function ProductCard({ product }) {
           </span>
         </div>
 
-        {/* Button */}
         <button
           onClick={() => addToCart(product)}
           className="mt-auto w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 text-white py-2.5 text-sm font-medium hover:bg-blue-700 active:scale-95 transition"
