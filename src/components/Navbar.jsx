@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
-import { FaShoppingCart, FaUser, FaHeart, FaBell, FaSearch } from "react-icons/fa";
+import { FaShoppingCart, FaUser, FaHeart, FaBell, FaSearch, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import productsData from "../data/products"; 
 
 export default function Navbar({ setFilteredProducts }) {
-  const { cartItems } = useCart();
+  const { cartItems, removeFromCart, clearCart } = useCart();
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [showCartPreview, setShowCartPreview] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0);
   const subtotal = cartItems.reduce((total, item) => total + item.qty * item.price, 0);
+  const discount = Math.floor(subtotal * 0.05);
+  const total = subtotal - discount;
 
- 
+  // Live product filter
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredProducts(productsData);
@@ -21,22 +23,22 @@ export default function Navbar({ setFilteredProducts }) {
       return;
     }
 
-    const filtered = productsData.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = productsData.filter(p =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    setFilteredProducts(filtered);          
-    setSuggestions(filtered.slice(0, 5));   
+    setFilteredProducts(filtered);
+    setSuggestions(filtered.slice(0,5));
   }, [searchTerm, setFilteredProducts]);
 
   const handleSelectSuggestion = (product) => {
     setSearchTerm(product.name);
     setSuggestions([]);
-    setFilteredProducts([product]); 
+    setFilteredProducts([product]);
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-gray-100">
+    <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-6">
         <div className="h-16 flex items-center justify-between">
 
@@ -45,7 +47,6 @@ export default function Navbar({ setFilteredProducts }) {
             <Link to="/" className="text-2xl font-bold text-blue-600 tracking-tight cursor-pointer">
               Shoply
             </Link>
-
             <ul className="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-600">
               <li><Link to="/" className="hover:text-blue-600 transition">Home</Link></li>
               <li><Link to="/" className="hover:text-blue-600 transition">Shop</Link></li>
@@ -61,7 +62,7 @@ export default function Navbar({ setFilteredProducts }) {
               <Link to="/orders">My Orders</Link>
             </li>
 
-            {/* Search input */}
+            {/* Search */}
             <div className="hidden md:flex flex-col w-64 relative">
               <div className="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full focus-within:ring-2 focus-within:ring-blue-500 transition">
                 <input
@@ -73,15 +74,13 @@ export default function Navbar({ setFilteredProducts }) {
                 />
                 <FaSearch className="text-gray-500 ml-2" />
               </div>
-
-              {/* Suggestions dropdown */}
               {suggestions.length > 0 && (
-                <ul className="absolute top-12 left-0 w-full bg-white shadow-lg rounded-lg overflow-hidden z-50">
+                <ul className="absolute top-12 left-0 w-full bg-white shadow-xl rounded-lg overflow-hidden z-50">
                   {suggestions.map((product) => (
                     <li
                       key={product.id}
                       onClick={() => handleSelectSuggestion(product)}
-                      className="px-4 py-2 cursor-pointer hover:bg-blue-100"
+                      className="px-4 py-2 cursor-pointer hover:bg-blue-100 transition"
                     >
                       {product.name}
                     </li>
@@ -93,52 +92,93 @@ export default function Navbar({ setFilteredProducts }) {
             {/* Icons */}
             <div className="flex items-center gap-4">
 
-              {/* Cart with preview */}
+              {/* Cart Dropdown */}
               <div
                 className="relative"
-                onMouseEnter={() => setShowCartPreview(true)}
-                onMouseLeave={() => setShowCartPreview(false)}
+                onMouseEnter={() => setCartOpen(true)}
+                onMouseLeave={() => setCartOpen(false)}
               >
-                <Link to="/cart" className="relative text-gray-700 hover:text-blue-600 transition" aria-label="Cart">
-                  <FaShoppingCart className="text-lg" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
+                <FaShoppingCart className="text-lg text-gray-700 hover:text-blue-600 cursor-pointer transition" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    {cartCount}
+                  </span>
+                )}
 
-                {/* Cart preview dropdown */}
-                {showCartPreview && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-50">
-                    {cartItems.length > 0 ? (
-                      <>
-                        <ul className="divide-y divide-gray-200 max-h-64 overflow-y-auto">
-                          {cartItems.map((item) => (
-                            <li key={item.id} className="flex justify-between items-center px-4 py-2">
-                              <span className="text-sm">{item.name} x {item.qty}</span>
-                              <span className="text-sm font-semibold">₹{item.price * item.qty}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="px-4 py-2 border-t border-gray-200 flex justify-between items-center font-semibold">
+                <div
+                  className={`absolute right-0 mt-2 w-96 bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 p-5 transition-all duration-300 ease-in-out transform ${
+                    cartOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
+                  }`}
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-gray-800 text-lg">Your Cart</h3>
+                    {cartItems.length > 0 && (
+                      <button
+                        onClick={clearCart}
+                        className="text-red-500 text-sm hover:underline font-medium"
+                      >
+                        Clear All
+                      </button>
+                    )}
+                  </div>
+
+                  {cartItems.length > 0 ? (
+                    <>
+                      <div className="max-h-72 overflow-y-auto divide-y divide-gray-200 mb-4">
+                        {cartItems.map(item => (
+                          <div key={item.id} className="flex items-center justify-between py-3 hover:bg-gray-50 rounded-xl transition p-2">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className="w-14 h-14 object-cover rounded-md hover:scale-105 transition-transform"
+                              />
+                              <div>
+                                <p className="text-sm font-semibold text-gray-800">{item.name}</p>
+                                <p className="text-xs text-gray-500">Qty: {item.qty}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-gray-900">₹{item.price * item.qty}</span>
+                              <FaTrash
+                                className="text-red-500 cursor-pointer hover:text-red-700 transition"
+                                onClick={() => removeFromCart(item.id)}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Subtotal & Total */}
+                      <div className="border-t border-gray-200 pt-3 pb-4 mb-3 text-gray-800">
+                        <div className="flex justify-between font-medium text-sm mb-1">
                           <span>Subtotal:</span>
                           <span>₹{subtotal}</span>
                         </div>
-                        <div className="px-4 py-2 border-t border-gray-200">
-                          <Link
-                            to="/cart"
-                            className="block text-center bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition"
-                          >
-                            View Cart
-                          </Link>
+                        <div className="flex justify-between text-gray-500 text-sm mb-1">
+                          <span>Discount:</span>
+                          <span>-₹{discount}</span>
                         </div>
-                      </>
-                    ) : (
-                      <p className="p-4 text-center text-gray-500">Your cart is empty.</p>
-                    )}
-                  </div>
-                )}
+                        <div className="flex justify-between font-bold text-base">
+                          <span>Total:</span>
+                          <span>₹{total}</span>
+                        </div>
+                      </div>
+
+                      <Link
+                        to="/checkout"
+                        className="block w-full text-center bg-blue-600 text-white py-2 rounded-xl font-medium hover:bg-blue-700 transition"
+                      >
+                        Checkout
+                      </Link>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <p className="text-gray-500 text-sm mb-2">Your cart is empty.</p>
+                      <img src="/empty-cart.svg" alt="Empty cart" className="w-24 h-24 opacity-50" />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
@@ -158,8 +198,8 @@ export default function Navbar({ setFilteredProducts }) {
                 Register
               </Link>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </nav>
