@@ -1,120 +1,160 @@
-import { FaTrash, FaMinus, FaPlus, FaShoppingBag } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 
 export default function Cart() {
-  const { cartItems, increaseQty, decreaseQty, removeFromCart } = useCart();
+  const { cartItems, removeFromCart, updateQty } = useCart();
 
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.qty,
+ const decreaseQty = (item) => {
+  updateQty(item.id, item.qty - 1);
+};
+
+const increaseQty = (item) => {
+  updateQty(item.id, item.qty + 1);
+};
+
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.price * item.qty,
     0
   );
 
+  // ---------------- Empty cart ----------------
   if (cartItems.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-20 text-center">
-        <FaShoppingBag className="mx-auto text-6xl text-gray-300 mb-6" />
-        <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-          Your cart is empty
-        </h2>
-        <p className="text-gray-500">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6">
+        <h2 className="text-3xl font-semibold mb-3">Your cart is empty</h2>
+        <p className="text-gray-500 mb-6">
           Looks like you haven’t added anything yet.
         </p>
+        <Link
+          to="/"
+          className="px-6 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+        >
+          Continue shopping
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <h1 className="text-3xl font-semibold mb-10">Shopping Cart</h1>
 
-      {/* Cart Items */}
-      <div className="lg:col-span-2 space-y-6">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          Shopping Cart
-        </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-        {cartItems.map((item) => (
-          <div
-            key={item.id}
-            className="flex flex-col sm:flex-row gap-4 bg-white rounded-2xl shadow-sm border border-gray-100 p-4"
-          >
-            {/* Image */}
-            <div className="w-28 h-28 bg-gray-50 rounded-xl flex items-center justify-center">
+        {/* ---------------- Cart items ---------------- */}
+        <div className="lg:col-span-2 space-y-6">
+          {cartItems.map((item) => (
+            <div
+              key={item.id}
+              className="flex gap-6 bg-white rounded-2xl shadow-sm border p-5 hover:shadow-md transition"
+            >
               <img
                 src={item.image}
                 alt={item.name}
-                className="w-full h-full object-contain p-2"
+                className="w-28 h-28 object-cover rounded-xl"
               />
-            </div>
 
-            {/* Info */}
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-800">
-                {item.name}
-              </h3>
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg mb-1">
+                  {item.name}
+                </h3>
 
-              <p className="text-blue-600 font-bold mt-1">
-                ₹{item.price}
-              </p>
+                <p className="text-gray-500 text-sm mb-3">
+                  ${item.price.toFixed(2)} each
+                </p>
 
-              {/* Quantity */}
-              <div className="flex items-center gap-3 mt-4">
-                <button
-                  onClick={() => decreaseQty(item.id)}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
-                >
-                  <FaMinus />
-                </button>
+                <div className="flex items-center justify-between">
 
-                <span className="w-8 text-center font-medium">
-                  {item.qty}
-                </span>
+                  {/* Quantity */}
+                  <div className="flex items-center gap-3 border rounded-full px-4 py-2">
+                    <button
+                      onClick={() => decreaseQty(item)}
+                      className="text-gray-600 hover:text-blue-600"
+                    >
+                      <FaMinus />
+                    </button>
 
-                <button
-                  onClick={() => increaseQty(item.id)}
-                  className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
-                >
-                  <FaPlus />
-                </button>
+                    <span className="min-w-[20px] text-center font-medium">
+                      {item.qty}
+                    </span>
+
+                    <button
+                      onClick={() => increaseQty(item)}
+                      className="text-gray-600 hover:text-blue-600"
+                    >
+                      <FaPlus />
+                    </button>
+                  </div>
+
+                  {/* Sub total */}
+                  <div className="text-right">
+                    <p className="font-semibold">
+                      ${(item.price * item.qty).toFixed(2)}
+                    </p>
+
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="mt-2 flex items-center gap-2 text-sm text-red-500 hover:text-red-600"
+                    >
+                      <FaTrash /> Remove
+                    </button>
+                  </div>
+
+                </div>
               </div>
             </div>
-
-            {/* Remove */}
-            <button
-              onClick={() => removeFromCart(item.id)}
-              className="text-red-500 hover:text-red-600 self-start sm:self-center"
-            >
-              <FaTrash />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Order Summary */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 h-fit">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Order Summary
-        </h3>
-
-        <div className="space-y-3 text-sm text-gray-600">
-          <div className="flex justify-between">
-            <span>Subtotal</span>
-            <span>₹{subtotal}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span>Shipping</span>
-            <span className="text-green-600">FREE</span>
-          </div>
-
-          <div className="border-t pt-3 flex justify-between font-semibold text-gray-800">
-            <span>Total</span>
-            <span>₹{subtotal}</span>
-          </div>
+          ))}
         </div>
 
-        <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition">
-          Proceed to Checkout
-        </button>
+        {/* ---------------- Summary ---------------- */}
+        <div className="bg-white rounded-2xl border shadow-sm p-6 h-fit sticky top-24">
+
+          <h2 className="text-xl font-semibold mb-6">
+            Order Summary
+          </h2>
+
+          <div className="space-y-3 text-sm text-gray-600">
+            <div className="flex justify-between">
+              <span>Items</span>
+              <span>
+                {cartItems.reduce((a, b) => a + b.qty, 0)}
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Shipping</span>
+              <span className="text-green-600">Free</span>
+            </div>
+          </div>
+
+          <div className="border-t my-5" />
+
+          <div className="flex justify-between text-lg font-semibold mb-6">
+            <span>Total</span>
+            <span>${total.toFixed(2)}</span>
+          </div>
+
+          <Link
+            to="/checkout"
+            className="block text-center bg-blue-600 text-white py-3 rounded-full font-medium hover:bg-blue-700 transition"
+          >
+            Proceed to checkout
+          </Link>
+
+          <Link
+            to="/"
+            className="block text-center mt-4 text-sm text-gray-500 hover:text-blue-600"
+          >
+            Continue shopping
+          </Link>
+
+        </div>
       </div>
     </div>
   );
