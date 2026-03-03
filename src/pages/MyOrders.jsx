@@ -15,6 +15,7 @@ export default function MyOrders() {
         <h2 className="text-2xl font-semibold mb-3">
           No orders yet
         </h2>
+
         <Link
           to="/"
           className="px-6 py-3 rounded-full bg-blue-600 text-white"
@@ -33,48 +34,41 @@ export default function MyOrders() {
 
       <div className="space-y-6">
         {orders.map((order) => (
-          <div
+          <Link
+            to={`/orders/${order.id}`}
             key={order.id}
-            className="bg-white border rounded-2xl p-6 shadow-sm"
+            className="block bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition"
           >
+            {/* Header row */}
             <div className="flex flex-wrap justify-between gap-4 mb-4">
               <div>
-                <p className="text-sm text-gray-500">
-                  Order ID
-                </p>
-                <p className="font-medium">
-                  #{order.id}
-                </p>
+                <p className="text-sm text-gray-500">Order ID</p>
+                <p className="font-medium">#{order.id}</p>
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">
-                  Date
-                </p>
+                <p className="text-sm text-gray-500">Date</p>
                 <p className="font-medium">
                   {new Date(order.date).toLocaleString()}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">
-                  Total
-                </p>
+                <p className="text-sm text-gray-500">Total</p>
                 <p className="font-semibold">
                   ₹{order.total.toFixed(2)}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">
-                  Payment
-                </p>
+                <p className="text-sm text-gray-500">Payment</p>
                 <p className="font-medium capitalize">
                   {order.paymentMethod}
                 </p>
               </div>
             </div>
 
+            {/* Items */}
             <div className="border-t pt-4 space-y-2">
               {order.items.map((item) => (
                 <div
@@ -90,7 +84,7 @@ export default function MyOrders() {
                 </div>
               ))}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

@@ -14,6 +14,7 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import ProductDetails from "./pages/ProductDetails";
 import MyOrders from "./pages/MyOrders";
+import OrderDetails from "./pages/OrderDetails";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/orders" element={<MyOrders />} />
+        <Route path="/orders/:id" element={<OrderDetails />} />
       </Routes>
 
       <Footer />
