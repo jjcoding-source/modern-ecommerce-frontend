@@ -3,6 +3,7 @@ import HeroBanner from "./components/HeroBanner";
 import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import CategorySection from "./components/CategorySection";
+import BrandsSection from "./components/BrandsSection";
 
 function App() {
   return (
@@ -10,7 +11,8 @@ function App() {
       <Navbar />
       <HeroBanner />
       <CategorySection />
-      <Home />  
+      <Home /> 
+      <BrandsSection /> 
       <Footer />
     </div>
   );
