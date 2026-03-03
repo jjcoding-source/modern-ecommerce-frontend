@@ -8,12 +8,14 @@ export default function Navbar({ setFilteredProducts }) {
   const { cartItems } = useCart();
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [showCartPreview, setShowCartPreview] = useState(false);
 
   const cartCount = cartItems.reduce((total, item) => total + item.qty, 0);
+  const subtotal = cartItems.reduce((total, item) => total + item.qty * item.price, 0);
 
+ 
   useEffect(() => {
     if (!searchTerm.trim()) {
-      
       setFilteredProducts(productsData);
       setSuggestions([]);
       return;
@@ -26,7 +28,6 @@ export default function Navbar({ setFilteredProducts }) {
     setFilteredProducts(filtered);          
     setSuggestions(filtered.slice(0, 5));   
   }, [searchTerm, setFilteredProducts]);
-
 
   const handleSelectSuggestion = (product) => {
     setSearchTerm(product.name);
@@ -91,14 +92,54 @@ export default function Navbar({ setFilteredProducts }) {
 
             {/* Icons */}
             <div className="flex items-center gap-4">
-              <Link to="/cart" className="relative text-gray-700 hover:text-blue-600 transition" aria-label="Cart">
-                <FaShoppingCart className="text-lg" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {cartCount}
-                  </span>
+
+              {/* Cart with preview */}
+              <div
+                className="relative"
+                onMouseEnter={() => setShowCartPreview(true)}
+                onMouseLeave={() => setShowCartPreview(false)}
+              >
+                <Link to="/cart" className="relative text-gray-700 hover:text-blue-600 transition" aria-label="Cart">
+                  <FaShoppingCart className="text-lg" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+
+                {/* Cart preview dropdown */}
+                {showCartPreview && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 shadow-lg rounded-lg overflow-hidden z-50">
+                    {cartItems.length > 0 ? (
+                      <>
+                        <ul className="divide-y divide-gray-200 max-h-64 overflow-y-auto">
+                          {cartItems.map((item) => (
+                            <li key={item.id} className="flex justify-between items-center px-4 py-2">
+                              <span className="text-sm">{item.name} x {item.qty}</span>
+                              <span className="text-sm font-semibold">₹{item.price * item.qty}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="px-4 py-2 border-t border-gray-200 flex justify-between items-center font-semibold">
+                          <span>Subtotal:</span>
+                          <span>₹{subtotal}</span>
+                        </div>
+                        <div className="px-4 py-2 border-t border-gray-200">
+                          <Link
+                            to="/cart"
+                            className="block text-center bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 transition"
+                          >
+                            View Cart
+                          </Link>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="p-4 text-center text-gray-500">Your cart is empty.</p>
+                    )}
+                  </div>
                 )}
-              </Link>
+              </div>
 
               <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
                 <FaHeart className="text-lg" />
