@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -16,10 +17,16 @@ import ProductDetails from "./pages/ProductDetails";
 import MyOrders from "./pages/MyOrders";
 import OrderDetails from "./pages/OrderDetails";
 
+import productsData from "./data/products"; 
+
 function App() {
+  
+  const [filteredProducts, setFilteredProducts] = useState(productsData);
+
   return (
     <>
-      <Navbar />
+    
+      <Navbar setFilteredProducts={setFilteredProducts} />
 
       <Routes>
         <Route
@@ -28,7 +35,8 @@ function App() {
             <>
               <HeroBanner />
               <CategorySection />
-              <Home />
+              
+              <Home filteredProducts={filteredProducts} />
               <BrandsSection />
               <WhyChooseUs />
             </>
