@@ -3,15 +3,12 @@ import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 
 export default function Cart() {
-  const { cartItems, removeFromCart, updateQty } = useCart();
-
- const decreaseQty = (item) => {
-  updateQty(item.id, item.qty - 1);
-};
-
-const increaseQty = (item) => {
-  updateQty(item.id, item.qty + 1);
-};
+  const {
+    cartItems,
+    removeFromCart,
+    incrementQty,
+    decrementQty
+  } = useCart();
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
@@ -69,7 +66,7 @@ const increaseQty = (item) => {
                   {/* Quantity */}
                   <div className="flex items-center gap-3 border rounded-full px-4 py-2">
                     <button
-                      onClick={() => decreaseQty(item)}
+                      onClick={() => decrementQty(item.id)}
                       className="text-gray-600 hover:text-blue-600"
                     >
                       <FaMinus />
@@ -80,7 +77,7 @@ const increaseQty = (item) => {
                     </span>
 
                     <button
-                      onClick={() => increaseQty(item)}
+                      onClick={() => incrementQty(item.id)}
                       className="text-gray-600 hover:text-blue-600"
                     >
                       <FaPlus />
