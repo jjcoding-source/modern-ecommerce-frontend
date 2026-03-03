@@ -1,38 +1,50 @@
-import { FaStar, FaStarHalfAlt, FaRegStar, FaShoppingCart, FaHeart } from "react-icons/fa";
+import {
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
+  FaShoppingCart,
+  FaHeart
+} from "react-icons/fa";
 
 export default function ProductCard({ product }) {
-  const { name, price, oldPrice, rating, image } = product;
+  const { name, price, rating, image } = product;
 
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 group flex flex-col w-full max-w-xs sm:max-w-sm md:max-w-md">
-      
-      {/* Discount Badge */}
-      {oldPrice && (
-        <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded z-10">
-          {Math.round(((oldPrice - price) / oldPrice) * 100)}% OFF
-        </div>
-      )}
+    <div className="group relative bg-white rounded-xl border hover:shadow-2xl transition-all duration-300 overflow-hidden">
 
-      {/* Product Image */}
-      <div className="relative w-full h-40 overflow-hidden rounded-t-lg">
+      {/* wishlist */}
+      <button className="absolute top-3 right-3 z-10 bg-white p-2 rounded-full shadow hover:scale-110 transition">
+        <FaHeart className="text-gray-400 group-hover:text-red-500" />
+      </button>
+
+      {/* discount badge */}
+      <span className="absolute top-3 left-3 z-10 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded">
+        20% OFF
+      </span>
+
+      {/* image */}
+      <div className="relative w-full h-[170px] flex items-center justify-center bg-gray-50 overflow-hidden">
         <img
           src={image}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
         />
       </div>
 
-      {/* Product Details */}
-      <div className="p-4 flex flex-col flex-1 justify-between">
-        {/* Product Name */}
-        <h3 className="text-gray-800 font-medium text-sm sm:text-base md:text-lg mb-1 truncate">{name}</h3>
+      {/* content */}
+      <div className="p-4 flex flex-col gap-2">
 
-        {/* Rating */}
-        <div className="flex items-center gap-1 text-yellow-400 text-xs sm:text-sm mb-2">
+        {/* title */}
+        <h3 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2 min-h-[38px]">
+          {name}
+        </h3>
+
+        {/* rating */}
+        <div className="flex items-center gap-1 text-yellow-400 text-sm">
           {[...Array(fullStars)].map((_, i) => (
             <FaStar key={i} />
           ))}
@@ -40,22 +52,27 @@ export default function ProductCard({ product }) {
           {[...Array(emptyStars)].map((_, i) => (
             <FaRegStar key={i} />
           ))}
-          <span className="text-gray-500 ml-1 text-xs sm:text-sm">({rating.toFixed(1)})</span>
+
+          <span className="text-gray-500 text-xs ml-1">
+            ({rating})
+          </span>
         </div>
 
-        {/* Price */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-blue-600 font-bold text-base sm:text-lg">${price}</span>
-          {oldPrice && <span className="line-through text-gray-400 text-sm sm:text-base">${oldPrice}</span>}
-        </div>
-
-        {/* Buttons */}
+        {/* price */}
         <div className="flex items-center gap-2">
-          <button className="flex-1 bg-blue-600 text-white py-2 rounded-md text-sm sm:text-base font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
-            <FaShoppingCart /> Add to Cart
-          </button>
-          <button className="p-2 bg-gray-100 rounded-md text-gray-700 hover:text-red-500 hover:bg-gray-200 transition shadow-md">
-            <FaHeart />
+          <span className="text-lg font-bold text-gray-900">
+            ${price}
+          </span>
+          <span className="text-sm text-gray-400 line-through">
+            ${(price * 1.25).toFixed(0)}
+          </span>
+        </div>
+
+        {/* actions */}
+        <div className="mt-2">
+          <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white text-sm font-medium py-2 rounded-lg hover:bg-blue-700 transition">
+            <FaShoppingCart />
+            Add to cart
           </button>
         </div>
       </div>
