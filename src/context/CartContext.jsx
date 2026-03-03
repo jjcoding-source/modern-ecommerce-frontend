@@ -1,19 +1,28 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const stored = localStorage.getItem("cart");
+    return stored ? JSON.parse(stored) : [];
+  });
 
+ 
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  
   const addToCart = (product) => {
     setCartItems((prev) => {
-      const existing = prev.find((p) => p.id === product.id);
+      const existing = prev.find((item) => item.id === product.id);
 
       if (existing) {
-        return prev.map((p) =>
-          p.id === product.id
-            ? { ...p, qty: p.qty + 1 }
-            : p
+        return prev.map((item) =>
+          item.id === product.id
+            ? { ...item, qty: item.qty + 1 }
+            : item
         );
       }
 
@@ -21,22 +30,36 @@ export function CartProvider({ children }) {
     });
   };
 
+  
   const removeFromCart = (id) => {
-    setCartItems((prev) => prev.filter((p) => p.id !== id));
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   
-  const updateQty = (id, qty) => {
-    if (qty <= 0) {
-      removeFromCart(id);
-      return;
-    }
-
+  const incrementQty = (id) => {
     setCartItems((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, qty } : p
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty: item.qty + 1 }
+          : item
       )
     );
+  };
+
+  const decrementQty = (id) => {
+    setCartItems((prev) =>
+      prev
+        .map((item) =>
+          item.id === id
+            ? { ...item, qty: item.qty - 1 }
+            : item
+        )
+        .filter((item) => item.qty > 0)
+    );
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
   };
 
   return (
@@ -45,7 +68,9 @@ export function CartProvider({ children }) {
         cartItems,
         addToCart,
         removeFromCart,
-        updateQty
+        incrementQty,
+        decrementQty,
+        clearCart
       }}
     >
       {children}
