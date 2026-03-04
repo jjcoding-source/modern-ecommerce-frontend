@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { FaShoppingCart, FaUser, FaHeart, FaBell, FaSearch, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useUser } from "../context/UserContext"; 
 import productsData from "../data/products"; 
 
 export default function Navbar({ setFilteredProducts }) {
   const { cartItems, removeFromCart, clearCart } = useCart();
+  const { currentUser, logoutUser } = useUser(); 
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -15,7 +17,7 @@ export default function Navbar({ setFilteredProducts }) {
   const discount = Math.floor(subtotal * 0.05);
   const total = subtotal - discount;
 
-  // Live product filter
+  
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredProducts(productsData);
@@ -195,18 +197,34 @@ export default function Navbar({ setFilteredProducts }) {
                 <FaHeart className="text-lg cursor-pointer" />
               </Link>
 
+              {/* Notification Icon */}
               <button className="hidden sm:block text-gray-700 hover:text-blue-600 transition">
                 <FaBell className="text-lg" />
               </button>
 
-              <Link to="/login" className="hidden md:flex items-center gap-2 text-gray-700 hover:text-blue-600 transition">
-                <FaUser />
-                <span className="text-sm font-medium">Login</span>
-              </Link>
+              {/* User Profile / Login */}
+              {currentUser ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">{currentUser.name}</span>
+                  <button
+                    onClick={logoutUser}
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link to="/login" className="hidden md:flex items-center gap-2 text-gray-700 hover:text-blue-600 transition">
+                    <FaUser />
+                    <span className="text-sm font-medium">Login</span>
+                  </Link>
 
-              <Link to="/register" className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition">
-                Register
-              </Link>
+                  <Link to="/register" className="ml-1 rounded-full bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition">
+                    Register
+                  </Link>
+                </>
+              )}
             </div>
 
           </div>

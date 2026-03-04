@@ -6,6 +6,7 @@ import "./index.css";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext"; 
 import { ReviewsProvider } from "./context/ReviewsContext";
+import { UserProvider } from "./context/UserContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <CartProvider>
         <WishlistProvider> 
           <ReviewsProvider>
+            <UserProvider>
           <App />
+          </UserProvider>
           </ReviewsProvider>
         </WishlistProvider>
       </CartProvider>

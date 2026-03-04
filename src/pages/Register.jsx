@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext"; 
 
 // ----------------- Validation Schema -----------------
 const schema = yup.object().shape({
@@ -30,32 +31,34 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
+  const { loginUser } = useUser(); 
 
   const onSubmit = (data) => {
     setLoading(true);
     setApiError("");
 
     try {
-      // Get existing users from localStorage
       const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      // Check if email already exists
       if (users.some((u) => u.email === data.email)) {
         throw new Error("Email already registered");
       }
 
-      // Add new user
-      users.push({
+      const newUser = {
         id: Date.now(),
         name: data.fullName,
         email: data.email,
         password: data.password,
-      });
+      };
 
+      users.push(newUser);
       localStorage.setItem("users", JSON.stringify(users));
 
+      localStorage.setItem("currentUser", JSON.stringify(newUser));
+      loginUser(newUser);
+
       alert("Registration successful!");
-      navigate("/login"); 
+      navigate("/"); 
     } catch (err) {
       setApiError(err.message || "Registration failed");
     } finally {
@@ -82,9 +85,7 @@ export default function Register() {
               className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
             />
             {errors.fullName && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.fullName.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
             )}
           </div>
 
@@ -97,9 +98,7 @@ export default function Register() {
               className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
             )}
           </div>
 
@@ -112,26 +111,20 @@ export default function Register() {
               className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
             />
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label className="text-sm font-medium mb-1 block">
-              Confirm Password
-            </label>
+            <label className="text-sm font-medium mb-1 block">Confirm Password</label>
             <input
               type="password"
               {...register("confirmPassword")}
               className="w-full border rounded-md px-3 py-2 focus:outline-blue-500 focus:ring-1 focus:ring-blue-500"
             />
             {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.confirmPassword.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
             )}
           </div>
 
@@ -145,7 +138,7 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="text-sm text-gray-500 mt-4 text-center">
+        <p className="text-sm text-gray-600 mt-4 text-center">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600 hover:underline">
             Login

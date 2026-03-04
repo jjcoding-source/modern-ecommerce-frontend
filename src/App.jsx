@@ -20,6 +20,7 @@ import Wishlist from "./pages/Wishlist";
 
 import productsData from "./data/products"; 
 
+
 function App() {
   
   const [filteredProducts, setFilteredProducts] = useState(productsData);
