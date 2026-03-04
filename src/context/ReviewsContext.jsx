@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 const ReviewsContext = createContext();
 
 export const ReviewsProvider = ({ children }) => {
-  const [reviews, setReviews] = useState({}); // { productId: [ { name, rating, comment } ] }
+  const [reviews, setReviews] = useState({}); 
 
   const addReview = (productId, review) => {
     setReviews(prev => ({

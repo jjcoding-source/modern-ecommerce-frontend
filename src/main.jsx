@@ -11,15 +11,15 @@ import { UserProvider } from "./context/UserContext";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
+     <UserProvider>
       <CartProvider>
         <WishlistProvider> 
           <ReviewsProvider>
-            <UserProvider>
           <App />
-          </UserProvider>
           </ReviewsProvider>
         </WishlistProvider>
       </CartProvider>
+      </UserProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

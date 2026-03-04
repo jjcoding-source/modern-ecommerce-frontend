@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import { FaShoppingCart, FaUser, FaHeart, FaBell, FaSearch, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { useUser } from "../context/UserContext"; 
 import productsData from "../data/products"; 
 
 export default function Navbar({ setFilteredProducts }) {
-  const { cartItems, removeFromCart, clearCart } = useCart();
   const { currentUser, logoutUser } = useUser(); 
+  const { cartItems, removeFromCart, clearCart } = useCart(currentUser?.email); 
+  const { wishlistItems } = useWishlist(currentUser?.email); 
+
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -17,7 +20,7 @@ export default function Navbar({ setFilteredProducts }) {
   const discount = Math.floor(subtotal * 0.05);
   const total = subtotal - discount;
 
-  
+  // Live product search filter
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredProducts(productsData);
@@ -192,9 +195,14 @@ export default function Navbar({ setFilteredProducts }) {
               {/* Wishlist Icon */}
               <Link
                 to="/wishlist"
-                className="hidden sm:flex text-gray-700 hover:text-blue-600 transition"
+                className="hidden sm:flex text-gray-700 hover:text-blue-600 transition relative"
               >
                 <FaHeart className="text-lg cursor-pointer" />
+                {wishlistItems.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[11px] rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    {wishlistItems.length}
+                  </span>
+                )}
               </Link>
 
               {/* Notification Icon */}
@@ -205,7 +213,7 @@ export default function Navbar({ setFilteredProducts }) {
               {/* User Profile / Login */}
               {currentUser ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">{currentUser.name}</span>
+                  <span className="text-sm font-medium text-gray-700">{currentUser.username || currentUser.name}</span>
                   <button
                     onClick={logoutUser}
                     className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-sm"

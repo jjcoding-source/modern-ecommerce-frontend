@@ -1,9 +1,28 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useUser } from "./UserContext"; 
 
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
+  const { currentUser } = useUser(); 
   const [wishlistItems, setWishlistItems] = useState([]);
+
+  // Load wishlist for the current user
+  useEffect(() => {
+    if (currentUser) {
+      const stored = localStorage.getItem(`wishlist_${currentUser.email}`);
+      setWishlistItems(stored ? JSON.parse(stored) : []);
+    } else {
+      setWishlistItems([]);
+    }
+  }, [currentUser]);
+
+  // Save wishlist for the current user
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem(`wishlist_${currentUser.email}`, JSON.stringify(wishlistItems));
+    }
+  }, [wishlistItems, currentUser]);
 
   const addToWishlist = (product) => {
     setWishlistItems((prev) => {
@@ -18,7 +37,6 @@ export const WishlistProvider = ({ children }) => {
     setWishlistItems((prev) => prev.filter((item) => item.id !== productId));
   };
 
- 
   const toggleWishlist = (product) => {
     const exists = wishlistItems.find((item) => item.id === product.id);
     if (exists) {
