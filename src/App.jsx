@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
@@ -18,33 +19,36 @@ import MyOrders from "./pages/MyOrders";
 import OrderDetails from "./pages/OrderDetails";
 import Wishlist from "./pages/Wishlist";
 
-import productsData from "./data/products"; 
+// Admin
+import AdminRoute from "./routes/AdminRoute";
+import AdminDashboard from "./pages/AdminDashboard";
+import UsersPage from "./pages/admin/UsersPage";
+import ProductsPage from "./pages/admin/ProductsPage";
+import OrdersPage from "./pages/admin/OrdersPage";
 
+import productsData from "./data/products";
 
 function App() {
-  
   const [filteredProducts, setFilteredProducts] = useState(productsData);
 
   return (
     <>
-    
       <Navbar setFilteredProducts={setFilteredProducts} />
 
       <Routes>
+        {/* Public / User routes */}
         <Route
           path="/"
           element={
             <>
               <HeroBanner />
               <CategorySection />
-              
               <Home filteredProducts={filteredProducts} />
               <BrandsSection />
               <WhyChooseUs />
             </>
           }
         />
-
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -54,6 +58,20 @@ function App() {
         <Route path="/orders" element={<MyOrders />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
         <Route path="/wishlist" element={<Wishlist />} />
+
+        {/* Admin routes */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        >
+          <Route path="users" element={<UsersPage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+        </Route>
       </Routes>
 
       <Footer />
