@@ -27,11 +27,14 @@ import OrdersPage from "./pages/admin/OrdersPage";
 
 
 import { useProducts } from "./context/ProductsContext";
+import { getAllProducts } from "./utils/productsStorage";
 
 function App() {
 
   const { products } = useProducts();     
-  const [filteredProducts, setFilteredProducts] = useState([]);
+ const [filteredProducts, setFilteredProducts] = useState(() =>
+  getAllProducts()
+);
 
   useEffect(() => {
     setFilteredProducts(products);

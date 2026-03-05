@@ -6,6 +6,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { useUser } from "../context/UserContext"; 
 //import productsData from "../data/products"; 
 import { useProducts } from "../context/ProductsContext";
+import { getAllProducts } from "../utils/productsStorage";
 
 export default function Navbar({ setFilteredProducts }) {
   const { currentUser, logoutUser } = useUser(); 
@@ -22,21 +23,24 @@ export default function Navbar({ setFilteredProducts }) {
   const discount = Math.floor(subtotal * 0.05);
   const total = subtotal - discount;
 
-  // Live product search filter
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredProducts(products);
-      setSuggestions([]);
-      return;
-    }
+ useEffect(() => {
 
-    const filtered = products.filter(p =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const allProducts = getAllProducts();
 
-    setFilteredProducts(filtered);
-    setSuggestions(filtered.slice(0, 5));
-  }, [searchTerm, setFilteredProducts]);
+  if (!searchTerm.trim()) {
+    setFilteredProducts(allProducts);
+    setSuggestions([]);
+    return;
+  }
+
+  const filtered = allProducts.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  setFilteredProducts(filtered);
+  setSuggestions(filtered.slice(0, 5));
+
+}, [searchTerm, setFilteredProducts]);
 
   const handleSelectSuggestion = (product) => {
     setSearchTerm(product.name);
