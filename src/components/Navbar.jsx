@@ -4,12 +4,14 @@ import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useUser } from "../context/UserContext"; 
-import productsData from "../data/products"; 
+//import productsData from "../data/products"; 
+import { useProducts } from "../context/ProductsContext";
 
 export default function Navbar({ setFilteredProducts }) {
   const { currentUser, logoutUser } = useUser(); 
   const { cartItems, removeFromCart, clearCart } = useCart(currentUser?.email); 
   const { wishlistItems } = useWishlist(currentUser?.email); 
+  const { products } = useProducts();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -23,12 +25,12 @@ export default function Navbar({ setFilteredProducts }) {
   // Live product search filter
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setFilteredProducts(productsData);
+      setFilteredProducts(products);
       setSuggestions([]);
       return;
     }
 
-    const filtered = productsData.filter(p =>
+    const filtered = products.filter(p =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 

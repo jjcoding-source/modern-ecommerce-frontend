@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -26,16 +25,24 @@ import UsersPage from "./pages/admin/UsersPage";
 import ProductsPage from "./pages/admin/ProductsPage";
 import OrdersPage from "./pages/admin/OrdersPage";
 
-import productsData from "./data/products";
+
+import { useProducts } from "./context/ProductsContext";
 
 function App() {
-  const [filteredProducts, setFilteredProducts] = useState(productsData);
+
+  const { products } = useProducts();     
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
 
   return (
     <>
       <Navbar setFilteredProducts={setFilteredProducts} />
 
       <Routes>
+
         {/* Public / User routes */}
         <Route
           path="/"
@@ -49,6 +56,7 @@ function App() {
             </>
           }
         />
+
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -72,6 +80,7 @@ function App() {
           <Route path="products" element={<ProductsPage />} />
           <Route path="orders" element={<OrdersPage />} />
         </Route>
+
       </Routes>
 
       <Footer />

@@ -1,6 +1,6 @@
-// src/data/products.js
+
 const products = [
-  // Electronics
+  
   {
     id: 1,
     name: "Wireless Headphones",

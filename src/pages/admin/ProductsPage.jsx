@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import productsData from "../../data/products";
+import { useState } from "react";
+import { useProducts } from "../../context/ProductsContext";
 
 const emptyForm = {
   id: null,
@@ -10,24 +10,16 @@ const emptyForm = {
 };
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState([]);
+
+  const {
+    products,
+    addProduct,
+    updateProduct,
+    deleteProduct
+  } = useProducts();
+
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
-
-  
-  useEffect(() => {
-    const stored = localStorage.getItem("admin_products");
-    if (stored) {
-      setProducts(JSON.parse(stored));
-    } else {
-      setProducts(productsData);
-    }
-  }, []);
-
-  // Save products
-  useEffect(() => {
-    localStorage.setItem("admin_products", JSON.stringify(products));
-  }, [products]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,7 +27,7 @@ export default function ProductsPage() {
 
   const generateId = () => {
     if (products.length === 0) return 1;
-    return Math.max(...products.map((p) => p.id)) + 1;
+    return Math.max(...products.map(p => p.id)) + 1;
   };
 
   const handleSubmit = (e) => {
@@ -47,29 +39,25 @@ export default function ProductsPage() {
     }
 
     if (editingId) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === editingId
-            ? {
-                ...p,
-                name: form.name,
-                price: Number(form.price),
-                rating: Number(form.rating),
-                image: form.image
-              }
-            : p
-        )
-      );
+
+      updateProduct({
+        id: editingId,
+        name: form.name,
+        price: Number(form.price),
+        rating: Number(form.rating),
+        image: form.image
+      });
+
     } else {
-      const newProduct = {
+
+      addProduct({
         id: generateId(),
         name: form.name,
         price: Number(form.price),
         rating: Number(form.rating),
         image: form.image
-      };
+      });
 
-      setProducts((prev) => [...prev, newProduct]);
     }
 
     setForm(emptyForm);
@@ -89,8 +77,7 @@ export default function ProductsPage() {
 
   const handleDelete = (id) => {
     if (!window.confirm("Delete this product?")) return;
-
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    deleteProduct(id);
   };
 
   const cancelEdit = () => {
@@ -108,6 +95,7 @@ export default function ProductsPage() {
         onSubmit={handleSubmit}
         className="bg-white p-5 rounded-xl shadow grid md:grid-cols-5 gap-4"
       >
+
         <input
           name="name"
           placeholder="Product name"
@@ -216,6 +204,7 @@ export default function ProductsPage() {
                 </td>
               </tr>
             )}
+
           </tbody>
         </table>
       </div>

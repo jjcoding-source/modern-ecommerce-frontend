@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useReviews } from "../context/ReviewsContext";
-import products from "../data/products"; 
+//import products from "../data/products"; 
+import { useProducts } from "../context/ProductsContext";
 import { FaStar, FaStarHalfAlt, FaRegStar, FaTruck, FaCheckCircle } from "react-icons/fa";
 
 export default function ProductDetails() {
@@ -11,6 +12,7 @@ export default function ProductDetails() {
   const { addToCart } = useCart();
   const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
   const { reviews, addReview } = useReviews();
+  const { products } = useProducts();
 
   const product = products.find((p) => String(p.id) === String(id));
   const isInWishlist = product && wishlistItems.some((item) => item.id === product.id);
