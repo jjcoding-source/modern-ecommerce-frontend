@@ -10,37 +10,46 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    // -------- Users --------
-    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // -------- Products --------
-    const products =
-      JSON.parse(localStorage.getItem("admin_products")) || [];
+    const loadStats = () => {
+      // -------- Users --------
+      const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // -------- Orders (all users) --------
-    let totalOrders = 0;
-    let totalRevenue = 0;
+      // -------- Products --------
+      const products =
+        JSON.parse(localStorage.getItem("admin_products")) || [];
 
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith("orders_")) {
-        const userOrders = JSON.parse(localStorage.getItem(key)) || [];
+      // -------- Orders (from all users) --------
+      let totalOrders = 0;
+      let totalRevenue = 0;
 
-        totalOrders += userOrders.length;
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("orders_")) {
+          const userOrders =
+            JSON.parse(localStorage.getItem(key)) || [];
 
-        userOrders.forEach((order) => {
-          if (order.total) {
-            totalRevenue += order.total;
-          }
-        });
-      }
-    });
+          totalOrders += userOrders.length;
 
-    setStats({
-      users: users.length,
-      products: products.length,
-      orders: totalOrders,
-      revenue: totalRevenue
-    });
+          userOrders.forEach((order) => {
+            totalRevenue += Number(order.total) || 0;
+          });
+        }
+      });
+
+      setStats({
+        users: users.length,
+        products: products.length,
+        orders: totalOrders,
+        revenue: totalRevenue
+      });
+    };
+
+    loadStats();
+
+    window.addEventListener("storage", loadStats);
+
+    return () => window.removeEventListener("storage", loadStats);
+
   }, []);
 
   return (
