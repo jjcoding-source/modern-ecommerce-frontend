@@ -1,136 +1,170 @@
-import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 export default function OrderDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { currentUser } = useUser();
+
   const [order, setOrder] = useState(null);
+  const [notAllowed, setNotAllowed] = useState(false);
 
   useEffect(() => {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const found = orders.find((o) => String(o.id) === id);
-    setOrder(found);
-  }, [id]);
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
 
-  if (!order) {
+    const allOrders =
+      JSON.parse(localStorage.getItem("orders")) || [];
+
+    const foundOrder = allOrders.find(
+      (o) => String(o.id) === String(id)
+    );
+
+    if (!foundOrder) {
+      setNotAllowed(true);
+      return;
+    }
+
+    // 🔐 very important check
+    if (foundOrder.user?.email !== currentUser.email) {
+      setNotAllowed(true);
+      return;
+    }
+
+    setOrder(foundOrder);
+  }, [id, currentUser, navigate]);
+
+  if (notAllowed) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-semibold mb-4">
-          Order not found
-        </h2>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+        <p className="text-lg font-semibold">
+          You are not allowed to view this order
+        </p>
         <Link
           to="/orders"
           className="text-blue-600 hover:underline"
         >
-          Back to orders
+          Go back to My Orders
         </Link>
       </div>
     );
   }
 
+  if (!order) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
+    <div className="max-w-5xl mx-auto px-6 py-10">
 
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-semibold">
-          Order Details
-        </h1>
+      <h1 className="text-2xl font-bold mb-6">
+        Order Details
+      </h1>
 
-        <Link
-          to="/orders"
-          className="text-sm text-blue-600 hover:underline"
-        >
-          Back to orders
-        </Link>
-      </div>
+      <div className="bg-white border rounded-xl p-6 shadow-sm space-y-4">
 
-      {/* Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div className="flex flex-wrap justify-between gap-4">
+          <div>
+            <p className="font-semibold">
+              Order #{order.id}
+            </p>
+            <p className="text-sm text-gray-500">
+              {new Date(order.date).toLocaleString()}
+            </p>
+          </div>
 
-        <div className="bg-white border rounded-xl p-5">
-          <p className="text-sm text-gray-500">Order ID</p>
-          <p className="font-medium">#{order.id}</p>
+          <span
+            className={`text-xs px-3 py-1 rounded-full font-medium h-fit
+              ${
+                order.status === "delivered"
+                  ? "bg-green-100 text-green-700"
+                  : order.status === "cancelled"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
+              }`}
+          >
+            {order.status || "pending"}
+          </span>
         </div>
 
-        <div className="bg-white border rounded-xl p-5">
-          <p className="text-sm text-gray-500">Date</p>
-          <p className="font-medium">
-            {new Date(order.date).toLocaleString()}
-          </p>
-        </div>
+        <hr />
 
-        <div className="bg-white border rounded-xl p-5">
-          <p className="text-sm text-gray-500">Payment</p>
-          <p className="font-medium capitalize">
-            {order.paymentMethod}
-          </p>
-        </div>
+        <h2 className="font-semibold">Items</h2>
 
-        <div className="bg-white border rounded-xl p-5">
-          <p className="text-sm text-gray-500">Total</p>
-          <p className="font-semibold">
-            ₹{order.total.toFixed(2)}
-          </p>
-        </div>
-
-      </div>
-
-      {/* Items */}
-      <div className="bg-white border rounded-2xl p-6 mb-8">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Items
-        </h2>
-
-        <div className="space-y-4">
+        <div className="space-y-3">
           {order.items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between gap-4"
+              className="flex items-center justify-between text-sm"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-16 h-16 object-contain border rounded-lg"
+                  className="w-12 h-12 object-cover rounded"
                 />
-
                 <div>
-                  <p className="font-medium">
-                    {item.name}
-                  </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-medium">{item.name}</p>
+                  <p className="text-gray-500">
                     Qty: {item.qty}
                   </p>
                 </div>
               </div>
 
               <p className="font-medium">
-                ₹{(item.price * item.qty).toFixed(2)}
+                ₹{item.price * item.qty}
               </p>
             </div>
           ))}
         </div>
 
-      </div>
+        <hr />
 
-      {/* Address */}
-      <div className="bg-white border rounded-2xl p-6">
+        <div className="flex justify-between font-semibold">
+          <span>Total</span>
+          <span>₹{order.total}</span>
+        </div>
 
-        <h2 className="text-xl font-semibold mb-4">
-          Delivery address
-        </h2>
+        <hr />
 
-        <div className="text-sm text-gray-700 space-y-1">
+        <div className="text-sm space-y-1">
+          <p className="font-semibold">Shipping Address</p>
           <p>{order.address.fullName}</p>
-          <p>{order.address.street}</p>
+          <p>{order.address.address}</p>
           <p>
-            {order.address.city}, {order.address.state}
+            {order.address.city}, {order.address.state} -{" "}
+            {order.address.pincode}
           </p>
-          <p>{order.address.zip}</p>
-          <p>{order.address.phone}</p>
+          <p>Phone: {order.address.phone}</p>
+        </div>
+
+        <div className="text-sm">
+          <p>
+            <span className="font-semibold">
+              Payment method:
+            </span>{" "}
+            {order.paymentMethod}
+          </p>
         </div>
 
       </div>
+
+      <div className="mt-6">
+        <Link
+          to="/orders"
+          className="text-blue-600 hover:underline text-sm"
+        >
+          ← Back to My Orders
+        </Link>
+      </div>
+
     </div>
   );
 }
