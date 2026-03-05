@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { FaCreditCard, FaMoneyBillWave, FaUniversity } from "react-icons/fa";
+import { useUser } from "../context/UserContext";
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { cartItems } = useCart();
+  const { currentUser } = useUser();
 
   const [form, setForm] = useState({
     fullName: "",
@@ -38,14 +40,26 @@ const handleSubmit = (e) => {
     }
   }
 
-  const order = {
-    id: Date.now(),
-    items: cartItems,
-    total,
-    address: form,
-    paymentMethod,
-    date: new Date().toISOString(),
-  };
+ const order = {
+  id: Date.now(),
+
+  user: currentUser
+    ? {
+        name: currentUser.name,
+        email: currentUser.email,
+      }
+    : {
+        name: form.fullName,
+        email: form.email,
+      },
+
+  items: cartItems,
+  total,
+  address: form,
+  paymentMethod,
+  status: "pending",
+  date: new Date().toISOString(),
+};
 
   const existingOrders =
     JSON.parse(localStorage.getItem("orders")) || [];
