@@ -49,6 +49,7 @@ export default function Register() {
         name: data.fullName,
         email: data.email,
         password: data.password,
+        role: "user"
       };
 
       users.push(newUser);

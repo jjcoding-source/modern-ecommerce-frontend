@@ -48,7 +48,12 @@ export default function Login() {
 
     console.log("Login successful:", user);
 
-    navigate("/");
+    if (user.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/");
+    }
+
   };
 
   return (
