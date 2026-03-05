@@ -6,7 +6,7 @@ import { useUser } from "../context/UserContext";
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { cartItems } = useCart();
+  const { cartItems, clearCart } = useCart();
   const { currentUser } = useUser();
 
   const [form, setForm] = useState({
@@ -68,7 +68,8 @@ const handleSubmit = (e) => {
     "orders",
     JSON.stringify([order, ...existingOrders])
   );
-
+  
+  clearCart();
   navigate("/order-success");
 };
 

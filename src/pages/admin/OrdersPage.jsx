@@ -12,9 +12,17 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
+  const load = () => {
     const stored = JSON.parse(localStorage.getItem("orders")) || [];
     setOrders(stored);
-  }, []);
+  };
+
+  load(); 
+
+  window.addEventListener("storage", load);
+
+  return () => window.removeEventListener("storage", load);
+}, []);
 
   const updateStatus = (id, newStatus) => {
     const updated = orders.map((order) =>
@@ -69,8 +77,18 @@ export default function OrdersPage() {
                   </td>
 
                   <td className="px-4 py-3">
-                    {order.items?.length || 0}
-                  </td>
+                    <div className="text-sm text-gray-700 space-y-1">
+                    {order.items && order.items.length > 0 ? (
+                    order.items.map((i) => (
+                    <div key={i.id}>
+                   {i.name} × {i.qty}
+                   </div>
+                 ))
+               ) : (
+               <span className="text-gray-400">No items</span>
+              )}
+                 </div>
+               </td>
 
                   <td className="px-4 py-3 font-semibold">
                     ₹{order.total}
@@ -83,20 +101,31 @@ export default function OrdersPage() {
                   </td>
 
                   <td className="px-4 py-3">
-                    <select
-                      value={status}
-                      onChange={(e) =>
-                        updateStatus(order.id, e.target.value)
-                      }
-                      className={`px-2 py-1 rounded text-xs font-medium border outline-none ${statusStyles[status]}`}
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="processing">Processing</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
+                    <div className="flex items-center gap-3">
+
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[status]}`}
+                      >
+                        {status}
+                      </span>
+
+                      <select
+                        value={status}
+                        onChange={(e) =>
+                          updateStatus(order.id, e.target.value)
+                        }
+                        className="border rounded-lg px-2 py-1 text-xs bg-white"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+
+                    </div>
                   </td>
+
                 </tr>
               );
             })}
