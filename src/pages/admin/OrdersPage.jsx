@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 
+const statusStyles = {
+  pending: "bg-yellow-100 text-yellow-700",
+  processing: "bg-blue-100 text-blue-700",
+  shipped: "bg-purple-100 text-purple-700",
+  delivered: "bg-green-100 text-green-700",
+  cancelled: "bg-red-100 text-red-700",
+};
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
 
@@ -19,9 +27,13 @@ export default function OrdersPage() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Manage Orders</h2>
+
+      <h2 className="text-2xl font-bold mb-6">
+        Orders Management
+      </h2>
 
       <div className="overflow-x-auto bg-white rounded-xl shadow border">
+
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100">
             <tr>
@@ -36,58 +48,64 @@ export default function OrdersPage() {
           </thead>
 
           <tbody>
-            {orders.map((order) => (
-              <tr
-                key={order.id}
-                className="border-t hover:bg-gray-50"
-              >
-                <td className="px-4 py-3">
-                  {order.id}
-                </td>
+            {orders.map((order) => {
+              const status = order.status || "pending";
 
-                <td className="px-4 py-3">
-                  {order.user?.name || "-"}
-                </td>
+              return (
+                <tr
+                  key={order.id}
+                  className="border-t hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3 font-medium">
+                    #{order.id}
+                  </td>
 
-                <td className="px-4 py-3">
-                  {order.user?.email || "-"}
-                </td>
+                  <td className="px-4 py-3">
+                    {order.user?.name || "Guest"}
+                  </td>
 
-                <td className="px-4 py-3">
-                  {order.items.length}
-                </td>
+                  <td className="px-4 py-3">
+                    {order.user?.email || "-"}
+                  </td>
 
-                <td className="px-4 py-3 font-medium">
-                  ₹{order.total}
-                </td>
+                  <td className="px-4 py-3">
+                    {order.items?.length || 0}
+                  </td>
 
-                <td className="px-4 py-3">
-                  {new Date(order.date).toLocaleString()}
-                </td>
+                  <td className="px-4 py-3 font-semibold">
+                    ₹{order.total}
+                  </td>
 
-                <td className="px-4 py-3">
-                  <select
-                    value={order.status || "pending"}
-                    onChange={(e) =>
-                      updateStatus(order.id, e.target.value)
-                    }
-                    className="border rounded px-2 py-1 text-sm"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="processing">Processing</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
-                </td>
-              </tr>
-            ))}
+                  <td className="px-4 py-3">
+                    {order.date
+                      ? new Date(order.date).toLocaleString()
+                      : "-"}
+                  </td>
+
+                  <td className="px-4 py-3">
+                    <select
+                      value={status}
+                      onChange={(e) =>
+                        updateStatus(order.id, e.target.value)
+                      }
+                      className={`px-2 py-1 rounded text-xs font-medium border outline-none ${statusStyles[status]}`}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </td>
+                </tr>
+              );
+            })}
 
             {orders.length === 0 && (
               <tr>
                 <td
                   colSpan={7}
-                  className="text-center py-6 text-gray-500"
+                  className="text-center py-10 text-gray-500"
                 >
                   No orders found
                 </td>
@@ -95,6 +113,7 @@ export default function OrdersPage() {
             )}
           </tbody>
         </table>
+
       </div>
     </div>
   );
