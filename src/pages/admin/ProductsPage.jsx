@@ -12,23 +12,39 @@ export default function ProductsPage() {
     image: ""
   });
 
-  // Load products
+  // Load products on page load
   useEffect(() => {
-    const stored = localStorage.getItem("admin_products");
-    if (stored) {
-      setProducts(JSON.parse(stored));
+    const storedProducts = JSON.parse(
+      localStorage.getItem("admin_products")
+    );
+
+    if (storedProducts && storedProducts.length > 0) {
+      setProducts(storedProducts);
     } else {
+      // fallback demo products
       setProducts(productsData);
+      localStorage.setItem(
+        "admin_products",
+        JSON.stringify(productsData)
+      );
     }
   }, []);
 
-  // Save products
+  // Save products whenever they change
   useEffect(() => {
-    localStorage.setItem("admin_products", JSON.stringify(products));
+    if (products.length > 0) {
+      localStorage.setItem(
+        "admin_products",
+        JSON.stringify(products)
+      );
+    }
   }, [products]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
   const resetForm = () => {
@@ -50,22 +66,22 @@ export default function ProductsPage() {
     }
 
     if (editingProduct) {
-      // update
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === editingProduct.id
-            ? {
-                ...p,
-                name: form.name,
-                price: Number(form.price),
-                rating: Number(form.rating),
-                image: form.image
-              }
-            : p
-        )
+      // Update product
+      const updated = products.map((p) =>
+        p.id === editingProduct.id
+          ? {
+              ...p,
+              name: form.name,
+              price: Number(form.price),
+              rating: Number(form.rating),
+              image: form.image
+            }
+          : p
       );
+
+      setProducts(updated);
     } else {
-      // add
+      // Add product
       const newProduct = {
         id: Date.now(),
         name: form.name,
@@ -74,7 +90,7 @@ export default function ProductsPage() {
         image: form.image
       };
 
-      setProducts((prev) => [...prev, newProduct]);
+      setProducts([...products, newProduct]);
     }
 
     resetForm();
@@ -82,6 +98,7 @@ export default function ProductsPage() {
 
   const editProduct = (product) => {
     setEditingProduct(product);
+
     setForm({
       name: product.name,
       price: product.price,
@@ -92,13 +109,16 @@ export default function ProductsPage() {
 
   const deleteProduct = (id) => {
     if (!window.confirm("Delete this product?")) return;
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+
+    const updated = products.filter((p) => p.id !== id);
+
+    setProducts(updated);
   };
 
   return (
     <div className="space-y-6">
 
-      {/* Form */}
+      {/* Add / Edit Form */}
       <div className="bg-white border rounded-2xl p-6 shadow-sm">
         <h2 className="text-lg font-semibold mb-4">
           {editingProduct ? "Edit Product" : "Add Product"}
@@ -164,9 +184,11 @@ export default function ProductsPage() {
         </form>
       </div>
 
-      {/* Table */}
+      {/* Products Table */}
       <div className="bg-white border rounded-2xl p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Products</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Products
+        </h2>
 
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm border">
@@ -191,11 +213,17 @@ export default function ProductsPage() {
                     />
                   </td>
 
-                  <td className="border px-3 py-2">{p.name}</td>
+                  <td className="border px-3 py-2">
+                    {p.name}
+                  </td>
 
-                  <td className="border px-3 py-2">₹{p.price}</td>
+                  <td className="border px-3 py-2">
+                    ₹{p.price}
+                  </td>
 
-                  <td className="border px-3 py-2">{p.rating}</td>
+                  <td className="border px-3 py-2">
+                    {p.rating}
+                  </td>
 
                   <td className="border px-3 py-2">
                     <div className="flex gap-2">
@@ -231,6 +259,7 @@ export default function ProductsPage() {
           </table>
         </div>
       </div>
+
     </div>
   );
 }
