@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, Link } from "react-router-dom";
+import RevenueChart from "../components/admin/RevenueChart";
 
 import {
   FaUsers,
@@ -16,23 +17,27 @@ export default function AdminDashboard() {
     revenue: 0
   });
 
+  const [orders, setOrders] = useState([]);
+
   const loadStats = () => {
     const users = JSON.parse(localStorage.getItem("users")) || [];
     const products =
       JSON.parse(localStorage.getItem("admin_products")) || [];
-    const orders =
+    const storedOrders =
       JSON.parse(localStorage.getItem("orders")) || [];
 
     let revenue = 0;
 
-    orders.forEach((order) => {
+    storedOrders.forEach((order) => {
       revenue += order.total || 0;
     });
+
+    setOrders(storedOrders);
 
     setStats({
       users: users.length,
       products: products.length,
-      orders: orders.length,
+      orders: storedOrders.length,
       revenue
     });
   };
@@ -137,6 +142,11 @@ export default function AdminDashboard() {
             color="bg-yellow-100 text-yellow-600"
           />
 
+        </div>
+
+        {/* Revenue Chart */}
+        <div className="mb-8">
+          <RevenueChart orders={orders} />
         </div>
 
         {/* Sub pages render here */}
