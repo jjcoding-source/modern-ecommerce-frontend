@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import SidebarFilter from "../../components/SidebarFilter";
-import productsData from "../../data/products";
+import { useProducts } from "../../context/ProductsContext";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState([]);
+
+  const { products, setProducts } = useProducts();
+
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
 
@@ -15,22 +17,8 @@ export default function ProductsPage() {
     category: "Electronics",
   });
 
-  // Load products from localStorage or fallback to productsData
   useEffect(() => {
-    const storedProducts = JSON.parse(localStorage.getItem("admin_products"));
-    if (storedProducts && storedProducts.length > 0) {
-      setProducts(storedProducts);
-      setFilteredProducts(storedProducts);
-    } else {
-      setProducts(productsData);
-      setFilteredProducts(productsData);
-      localStorage.setItem("admin_products", JSON.stringify(productsData));
-    }
-  }, []);
-
-  // Save products whenever they change
-  useEffect(() => {
-    localStorage.setItem("admin_products", JSON.stringify(products));
+    setFilteredProducts(products);
   }, [products]);
 
   const handleChange = (e) => {
@@ -38,12 +26,19 @@ export default function ProductsPage() {
   };
 
   const resetForm = () => {
-    setForm({ name: "", price: "", rating: "", image: "", category: "Electronics" });
+    setForm({
+      name: "",
+      price: "",
+      rating: "",
+      image: "",
+      category: "Electronics",
+    });
     setEditingProduct(null);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!form.name || !form.price || !form.image) {
       alert("Please fill required fields");
       return;
@@ -52,11 +47,16 @@ export default function ProductsPage() {
     if (editingProduct) {
       const updated = products.map((p) =>
         p.id === editingProduct.id
-          ? { ...p, ...form, price: Number(form.price), rating: Number(form.rating) }
+          ? {
+              ...p,
+              ...form,
+              price: Number(form.price),
+              rating: Number(form.rating),
+            }
           : p
       );
+
       setProducts(updated);
-      setFilteredProducts(updated);
     } else {
       const newProduct = {
         id: Date.now(),
@@ -64,9 +64,8 @@ export default function ProductsPage() {
         price: Number(form.price),
         rating: Number(form.rating),
       };
-      const updated = [...products, newProduct];
-      setProducts(updated);
-      setFilteredProducts(updated);
+
+      setProducts([...products, newProduct]);
     }
 
     resetForm();
@@ -74,36 +73,45 @@ export default function ProductsPage() {
 
   const editProduct = (product) => {
     setEditingProduct(product);
+
     setForm({
       name: product.name,
       price: product.price,
       rating: product.rating,
       image: product.image,
-      category: product.category || "Electronics",
+      category: product.category,
     });
   };
 
   const deleteProduct = (id) => {
     if (!window.confirm("Delete this product?")) return;
+
     const updated = products.filter((p) => p.id !== id);
     setProducts(updated);
-    setFilteredProducts(updated);
   };
 
   return (
     <div className="flex flex-col md:flex-row gap-6 p-5">
-      {/* Sidebar Filter */}
-      <SidebarFilter products={products} onFilter={setFilteredProducts} />
 
-      {/* Main Content */}
+      <SidebarFilter
+        products={products}
+        onFilter={setFilteredProducts}
+      />
+
       <div className="flex-1 space-y-6">
-        {/* Add / Edit Form */}
+
+        {/* Form */}
         <div className="bg-white border rounded-2xl p-6 shadow-sm">
+
           <h2 className="text-lg font-semibold mb-4">
             {editingProduct ? "Edit Product" : "Add Product"}
           </h2>
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          >
+
             <input
               name="name"
               placeholder="Product name"
@@ -111,6 +119,7 @@ export default function ProductsPage() {
               onChange={handleChange}
               className="border rounded-lg px-3 py-2"
             />
+
             <input
               name="price"
               type="number"
@@ -119,6 +128,7 @@ export default function ProductsPage() {
               onChange={handleChange}
               className="border rounded-lg px-3 py-2"
             />
+
             <input
               name="rating"
               type="number"
@@ -128,6 +138,7 @@ export default function ProductsPage() {
               onChange={handleChange}
               className="border rounded-lg px-3 py-2"
             />
+
             <input
               name="image"
               placeholder="Image URL"
@@ -135,6 +146,7 @@ export default function ProductsPage() {
               onChange={handleChange}
               className="border rounded-lg px-3 py-2"
             />
+
             <select
               name="category"
               value={form.category}
@@ -149,58 +161,94 @@ export default function ProductsPage() {
             </select>
 
             <div className="flex gap-3 md:col-span-2">
+
               <button
                 type="submit"
                 className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
               >
                 {editingProduct ? "Update" : "Add"}
               </button>
+
               {editingProduct && (
-                <button type="button" onClick={resetForm} className="border px-5 py-2 rounded-lg">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="border px-5 py-2 rounded-lg"
+                >
                   Cancel
                 </button>
               )}
+
             </div>
+
           </form>
         </div>
 
-        {/* Products Grid */}
+        {/* Product Grid */}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
           {filteredProducts.length > 0 ? (
+
             filteredProducts.map((p) => (
+
               <div
                 key={p.id}
                 className="bg-white rounded-2xl p-4 shadow hover:shadow-lg transition"
               >
+
                 <img
                   src={p.image}
                   alt={p.name}
                   className="w-full h-40 object-cover rounded-lg mb-3"
                 />
-                <h3 className="text-lg font-semibold">{p.name}</h3>
-                <p className="text-gray-500">₹{p.price}</p>
-                <p className="text-yellow-500">{"★".repeat(Math.round(p.rating))}</p>
+
+                <h3 className="text-lg font-semibold">
+                  {p.name}
+                </h3>
+
+                <p className="text-gray-500">
+                  ₹{p.price}
+                </p>
+
+                <p className="text-yellow-500">
+                  {"★".repeat(Math.round(p.rating))}
+                </p>
+
                 <div className="flex gap-2 mt-3">
+
                   <button
                     onClick={() => editProduct(p)}
                     className="bg-yellow-400 text-white px-3 py-1 rounded"
                   >
                     Edit
                   </button>
+
                   <button
                     onClick={() => deleteProduct(p.id)}
                     className="bg-red-500 text-white px-3 py-1 rounded"
                   >
                     Delete
                   </button>
+
                 </div>
+
               </div>
+
             ))
+
           ) : (
-            <p className="text-center text-gray-500 col-span-full">No products found</p>
+
+            <p className="text-center text-gray-500 col-span-full">
+              No products found
+            </p>
+
           )}
+
         </div>
+
       </div>
+
     </div>
   );
 }

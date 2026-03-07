@@ -6,6 +6,7 @@ const ProductsContext = createContext();
 export const ProductsProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
 
+ 
   useEffect(() => {
     const stored = localStorage.getItem("admin_products");
 
@@ -13,8 +14,16 @@ export const ProductsProvider = ({ children }) => {
       setProducts(JSON.parse(stored));
     } else {
       setProducts(productsData);
+      localStorage.setItem("admin_products", JSON.stringify(productsData));
     }
   }, []);
+
+
+  useEffect(() => {
+    if (products.length > 0) {
+      localStorage.setItem("admin_products", JSON.stringify(products));
+    }
+  }, [products]);
 
   return (
     <ProductsContext.Provider value={{ products, setProducts }}>
