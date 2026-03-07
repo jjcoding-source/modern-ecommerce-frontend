@@ -53,7 +53,10 @@ function App() {
             <>
               <HeroBanner />
               <CategorySection />
-              <Home filteredProducts={filteredProducts} />
+              <Home
+                filteredProducts={filteredProducts}
+                setFilteredProducts={setFilteredProducts}
+              />
               <BrandsSection />
               <WhyChooseUs />
             </>

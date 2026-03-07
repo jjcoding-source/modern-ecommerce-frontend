@@ -23,7 +23,8 @@ export default function Navbar({ setFilteredProducts }) {
   const discount = Math.floor(subtotal * 0.05);
   const total = subtotal - discount;
 
- useEffect(() => {
+useEffect(() => {
+  if (!setFilteredProducts) return;
 
   const allProducts = getAllProducts();
 
@@ -33,7 +34,7 @@ export default function Navbar({ setFilteredProducts }) {
     return;
   }
 
-  const filtered = allProducts.filter(p =>
+  const filtered = allProducts.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -42,11 +43,25 @@ export default function Navbar({ setFilteredProducts }) {
 
 }, [searchTerm, setFilteredProducts]);
 
-  const handleSelectSuggestion = (product) => {
-    setSearchTerm(product.name);
+ useEffect(() => {
+  if (!setFilteredProducts) return;
+
+  const allProducts = getAllProducts();
+
+  if (!searchTerm.trim()) {
+    setFilteredProducts(allProducts);
     setSuggestions([]);
-    setFilteredProducts([product]);
-  };
+    return;
+  }
+
+  const filtered = allProducts.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  setFilteredProducts(filtered);
+  setSuggestions(filtered.slice(0, 5));
+
+}, [searchTerm, setFilteredProducts]);
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">

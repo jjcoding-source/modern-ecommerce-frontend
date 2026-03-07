@@ -1,17 +1,27 @@
 import SidebarFilter from "../components/SidebarFilter";
-import ProductCard from "../components/ProductCard"; 
+import ProductCard from "../components/ProductCard";
 import SpecialOffers from "../components/SpecialOffers";
 import Testimonials from "../components/Testimonials";
+import { useProducts } from "../context/ProductsContext";
 
-export default function Home({ filteredProducts }) {
+export default function Home({ filteredProducts, setFilteredProducts }) {
 
-  const productsToShow = filteredProducts && filteredProducts.length > 0 ? filteredProducts : [];
+  const { products } = useProducts();
+
+  const productsToShow =
+    filteredProducts && filteredProducts.length > 0
+      ? filteredProducts
+      : products;
 
   return (
     <div className="container mx-auto mt-10 px-6">
-      {/* Sidebar + Product Grid */}
+      
       <div className="flex flex-col md:flex-row gap-6">
-        <SidebarFilter />
+
+        <SidebarFilter
+          products={products}
+          onFilter={setFilteredProducts}
+        />
 
         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {productsToShow.length > 0 ? (
@@ -24,14 +34,13 @@ export default function Home({ filteredProducts }) {
             </p>
           )}
         </div>
+
       </div>
 
-      {/* Special Offers Section */}
       <div className="mt-12">
         <SpecialOffers />
       </div>
 
-      {/* Testimonials Section */}
       <div className="mt-12">
         <Testimonials />
       </div>
